@@ -19,7 +19,8 @@ public class ImportRouteBuilder extends RouteBuilder {
 
         from("jpa:com.jojolaptech.camel.model.mysql.SourceCustomer"
                 + "?persistenceUnit=mysqlPU"
-                + "&consumer.namedQuery=SourceCustomer.fetchUnexported"
+                + "&entityManagerFactory=#mysqlEntityManagerFactory"
+                + "&namedQuery=SourceCustomer.fetchUnexported"
                 + "&consumeDelete=false"
                 + "&maximumResults=50"
                 + "&delay=5000")
