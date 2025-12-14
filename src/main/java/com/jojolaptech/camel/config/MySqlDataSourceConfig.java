@@ -61,10 +61,6 @@ public class MySqlDataSourceConfig {
         Map<String, Object> properties = new HashMap<>();
         properties.put("hibernate.hbm2ddl.auto", "none");
         properties.put("hibernate.dialect", dialect);
-        properties.put("hibernate.physical_naming_strategy",
-                "org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy");
-        properties.put("hibernate.implicit_naming_strategy",
-                "org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy");
         return properties;
     }
 }
