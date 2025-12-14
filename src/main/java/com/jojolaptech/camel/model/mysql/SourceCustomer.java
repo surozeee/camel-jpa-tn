@@ -15,7 +15,7 @@ import lombok.Setter;
 @Table(name = "customers")
 @NamedQuery(
         name = "SourceCustomer.fetchUnexported",
-        query = "select c from SourceCustomer c where c.exported = false")
+        query = "select c from SourceCustomer c where c.exported = false or c.exported is null")
 @Getter
 @Setter
 public class SourceCustomer {
@@ -34,6 +34,6 @@ public class SourceCustomer {
     private Instant createdAt = Instant.now();
 
     @Column(nullable = false)
-    private boolean exported = false;
+    private Boolean exported = false;
 }
 
