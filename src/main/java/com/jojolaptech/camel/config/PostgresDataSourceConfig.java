@@ -53,7 +53,8 @@ public class PostgresDataSourceConfig {
 
     private Map<String, Object> jpaProperties(String dialect) {
         Map<String, Object> properties = new HashMap<>();
-        properties.put("hibernate.hbm2ddl.auto", "none");
+        // Allow Postgres schema to be auto-updated so the target table is created if missing.
+        properties.put("hibernate.hbm2ddl.auto", "update");
         properties.put("hibernate.dialect", dialect);
         return properties;
     }

@@ -1,0 +1,21 @@
+# Gradle
+.gradle/
+build/
+
+# IDEs/editors
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Spring Boot
+application-local.yml
+

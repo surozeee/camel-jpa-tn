@@ -10,7 +10,7 @@ spring:
     postgres:
       url: jdbc:postgresql://localhost:5432/target_db
       username: postgres
-      password: postgres
+      password: password
       driver-class-name: org.postgresql.Driver
   jpa:
     open-in-view: false
