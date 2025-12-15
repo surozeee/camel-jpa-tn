@@ -56,6 +56,10 @@ public class PostgresDataSourceConfig {
         // Allow Postgres schema to be auto-updated so the target table is created if missing.
         properties.put("hibernate.hbm2ddl.auto", "update");
         properties.put("hibernate.dialect", dialect);
+        // Force camelCase entity names to snake_case table/column names.
+        properties.put(
+                "hibernate.physical_naming_strategy",
+                "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
         return properties;
     }
 }

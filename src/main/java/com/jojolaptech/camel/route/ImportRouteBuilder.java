@@ -2,6 +2,7 @@ package com.jojolaptech.camel.route;
 
 import com.jojolaptech.camel.processor.CustomerProcessor;
 import com.jojolaptech.camel.repository.mysql.SourceCustomerRepository;
+import com.jojolaptech.camel.repository.mysql.sec.SecUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,8 @@ import org.springframework.stereotype.Component;
 public class ImportRouteBuilder extends RouteBuilder {
 
     private final CustomerProcessor customerProcessor;
-    private final SourceCustomerRepository sourceCustomerRepository;
+//    private final SourceCustomerRepository sourceCustomerRepository;
+    private final SecUserRepository secUserRepository;
 
     @Override
     public void configure() {
@@ -22,7 +24,7 @@ public class ImportRouteBuilder extends RouteBuilder {
         from("timer:mysql-import?repeatCount=1&delay=0")
                 .routeId("mysql-to-postgres-import")
                 .setBody(exchange ->
-                        sourceCustomerRepository.findTop50ByExportedFalseOrExportedIsNullOrderByIdAsc())
+                        secUserRepository.findAll())
                 .split(body())
                 .log("Consuming customer ${body.id}")
                 .process(customerProcessor);
