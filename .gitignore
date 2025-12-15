@@ -8,7 +8,7 @@ build/
 .classpath
 .project
 .settings/
-
+target/
 # Logs
 *.log
 
