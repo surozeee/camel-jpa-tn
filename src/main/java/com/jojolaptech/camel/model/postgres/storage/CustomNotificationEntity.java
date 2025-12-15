@@ -1,13 +1,19 @@
-package com.jojolaptech.camel.model.storage.entity;
+package com.jojolaptech.camel.model.postgres.storage;
 
-
-import com.tendernotice.core.entity.BaseAuditEntity;
-import com.tendernotice.storagealertservice.enums.NotificationChannelEnum;
-import com.tendernotice.storagealertservice.enums.NotificationStatusEnum;
-import com.tendernotice.storagealertservice.enums.NotificationTypeEnum;
-import com.tendernotice.storagealertservice.payload.response.AppWebNotificationResponse;
-import jakarta.persistence.*;
-import lombok.*;
+import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.enums.NotificationChannelEnum;
+import com.jojolaptech.camel.model.postgres.enums.NotificationStatusEnum;
+import com.jojolaptech.camel.model.postgres.enums.NotificationTypeEnum;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -37,9 +43,10 @@ public class CustomNotificationEntity extends BaseAuditEntity {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private AppWebNotificationResponse appNotification;
+    private String appNotification;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private AppWebNotificationResponse webNotification;
+    private String webNotification;
 }
+

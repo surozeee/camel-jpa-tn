@@ -1,6 +1,6 @@
 package com.jojolaptech.camel.model.postgres.iam;
 
-import com.tendernotice.core.entity.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,3 +38,4 @@ public class TenderOptionSettingEntity extends BaseAuditEntity {
     @JoinColumn(name = "user_info_id")
     private UserInfoEntity userInfo;
 }
+

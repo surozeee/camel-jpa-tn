@@ -1,7 +1,7 @@
 package com.jojolaptech.camel.model.postgres.notice;
 
-import com.tendernotice.core.entity.BaseAuditEntity;
-import com.tendernotice.tenderservice.enums.ValueTypeEnum;
+import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.enums.ValueTypeEnum;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

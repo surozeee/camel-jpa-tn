@@ -1,13 +1,21 @@
 package com.jojolaptech.camel.model.postgres.iam;
 
-import com.tendernotice.core.entity.BaseAuditEntity;
-import com.tendernotice.identityservice.usermodule.enums.ValueTypeEnum;
-import com.tendernotice.identityservice.usermodule.payload.request.AssignedCommissionRequest;
-import com.tendernotice.identityservice.usermodule.payload.request.ClaimedCommissionRequest;
-import com.tendernotice.identityservice.usermodule.payload.request.ClientPaymentRequest;
+import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.enums.ValueTypeEnum;
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 
 import java.util.List;
@@ -23,15 +31,15 @@ public class PartnerCommissionEntity extends BaseAuditEntity {
 
     @Column(columnDefinition = "jsonb")
     @Type(value = JsonBinaryType.class)
-    private List<ClientPaymentRequest> clientPayment;
+    private List<String> clientPayment;
 
     @Column(columnDefinition = "jsonb")
     @Type(value = JsonBinaryType.class)
-    private List<ClaimedCommissionRequest> claimedCommission;
+    private List<String> claimedCommission;
 
     @Column(columnDefinition = "jsonb")
     @Type(value = JsonBinaryType.class)
-    private List<AssignedCommissionRequest> assignedCommission;
+    private List<String> assignedCommission;
 
     @Enumerated(EnumType.STRING)
     private ValueTypeEnum commissionType;
@@ -40,3 +48,4 @@ public class PartnerCommissionEntity extends BaseAuditEntity {
     @JoinColumn(name = "partner_id")
     private ReferralUserEntity partner;
 }
+

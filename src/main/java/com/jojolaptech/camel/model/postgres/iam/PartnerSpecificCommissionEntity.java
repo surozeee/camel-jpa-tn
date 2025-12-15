@@ -1,8 +1,15 @@
 package com.jojolaptech.camel.model.postgres.iam;
 
-import com.tendernotice.core.entity.BaseAuditEntity;
-import com.tendernotice.identityservice.usermodule.enums.ValueTypeEnum;
-import jakarta.persistence.*;
+import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.enums.ValueTypeEnum;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,3 +36,4 @@ public class PartnerSpecificCommissionEntity extends BaseAuditEntity {
     @JoinColumn(name = "partner_id")
     private UserEntity partner;
 }
+

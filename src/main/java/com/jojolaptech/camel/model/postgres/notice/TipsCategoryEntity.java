@@ -1,8 +1,8 @@
 package com.jojolaptech.camel.model.postgres.notice;
 
 
-import com.tendernotice.core.entity.BaseAuditEntity;
-import com.tendernotice.tenderservice.enums.StatusEnum;
+import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.enums.StatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,3 +23,4 @@ public class TipsCategoryEntity extends BaseAuditEntity {
     @Enumerated(EnumType.STRING)
     private StatusEnum status;
 }
+

@@ -1,6 +1,6 @@
 package com.jojolaptech.camel.model.postgres.notice;
 
-import com.tendernotice.core.entity.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,3 +22,4 @@ public class QuotedAmountEntity extends BaseAuditEntity {
     @JoinColumn(name = "primary_bidder_id")
     private PrimaryBidderEntity primaryBidder;
 }
+

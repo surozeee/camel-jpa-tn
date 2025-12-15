@@ -1,9 +1,17 @@
 package com.jojolaptech.camel.model.postgres.iam;
 
-import com.tendernotice.core.entity.BaseAuditEntity;
-import com.tendernotice.identityservice.usermodule.enums.StatusEnum;
-import jakarta.persistence.*;
-import lombok.*;
+import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.enums.StatusEnum;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "scopes")
@@ -24,3 +32,4 @@ public class ScopeEntity extends BaseAuditEntity {
         this.status = StatusEnum.ACTIVE;
     }
 }
+

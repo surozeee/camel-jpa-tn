@@ -1,11 +1,22 @@
-package com.jojolaptech.camel.model.storage.entity;
+package com.jojolaptech.camel.model.postgres.storage;
 
-import com.tendernotice.core.enums.ChannelEnum;
-import com.tendernotice.core.enums.LanguageEnum;
-import com.tendernotice.core.enums.TopicEnum;
-import com.tendernotice.storagealertservice.enums.NotificationStatusEnum;
-import jakarta.persistence.*;
-import lombok.*;
+import com.jojolaptech.camel.model.postgres.enums.ChannelEnum;
+import com.jojolaptech.camel.model.postgres.enums.LanguageEnum;
+import com.jojolaptech.camel.model.postgres.enums.NotificationStatusEnum;
+import com.jojolaptech.camel.model.postgres.enums.TopicEnum;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedBy;
 

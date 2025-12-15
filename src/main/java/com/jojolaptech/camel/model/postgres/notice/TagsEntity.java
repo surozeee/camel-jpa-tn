@@ -1,6 +1,6 @@
 package com.jojolaptech.camel.model.postgres.notice;
 
-import com.tendernotice.core.entity.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -21,3 +21,4 @@ public class TagsEntity extends BaseAuditEntity {
     private UUID noticeId;
 
 }
+

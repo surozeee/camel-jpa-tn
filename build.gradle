@@ -28,6 +28,7 @@ dependencies {
     implementation "org.apache.camel.springboot:camel-spring-boot-starter:${camelVersion}"
     implementation "org.apache.camel:camel-jpa:${camelVersion}"
     implementation 'com.mysql:mysql-connector-j:9.5.0'
+    implementation "io.hypersistence:hypersistence-utils-hibernate-62:3.7.6"
     implementation 'org.postgresql:postgresql:42.7.3'
 
     compileOnly 'org.projectlombok:lombok'

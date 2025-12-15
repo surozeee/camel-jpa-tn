@@ -1,6 +1,6 @@
 package com.jojolaptech.camel.model.postgres.notice;
 
-import com.tendernotice.core.entity.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,3 +35,4 @@ public class PrimaryBidderEntity extends BaseAuditEntity {
 
 
 }
+

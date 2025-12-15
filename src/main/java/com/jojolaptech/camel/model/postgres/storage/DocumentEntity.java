@@ -1,6 +1,6 @@
-package com.jojolaptech.camel.model.storage.entity;
+package com.jojolaptech.camel.model.postgres.storage;
 
-import com.tendernotice.core.entity.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -34,3 +34,4 @@ public class DocumentEntity extends BaseAuditEntity {
     private LocalDateTime uploadedAt;
 
 }
+

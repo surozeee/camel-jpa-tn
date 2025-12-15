@@ -1,7 +1,7 @@
 package com.jojolaptech.camel.model.postgres.notice;
 
-import com.tendernotice.core.entity.BaseAuditEntity;
-import com.tendernotice.tenderservice.enums.NoticeAwardCategory;
+import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.enums.NoticeAwardCategory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,3 +40,4 @@ public class TenderParticipateEntity extends BaseAuditEntity {
 
 
 }
+

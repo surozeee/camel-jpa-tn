@@ -1,11 +1,18 @@
-package com.jojolaptech.camel.model.storage.entity;
+package com.jojolaptech.camel.model.postgres.storage;
 
-
-import com.tendernotice.core.entity.BaseAuditEntity;
-import com.tendernotice.storagealertservice.enums.CustomEmailEnum;
-import com.tendernotice.storagealertservice.enums.NotificationStatusEnum;
-import jakarta.persistence.*;
-import lombok.*;
+import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.enums.CustomEmailEnum;
+import com.jojolaptech.camel.model.postgres.enums.NotificationStatusEnum;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -34,3 +41,4 @@ public class CustomEmailEntity extends BaseAuditEntity {
     @Enumerated(EnumType.STRING)
     private NotificationStatusEnum status;
 }
+

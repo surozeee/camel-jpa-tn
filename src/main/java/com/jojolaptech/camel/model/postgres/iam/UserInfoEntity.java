@@ -1,10 +1,21 @@
 package com.jojolaptech.camel.model.postgres.iam;
 
-import com.tendernotice.core.entity.BaseAuditEntity;
-import com.tendernotice.identityservice.usermodule.enums.AuthProviderEnum;
-import com.tendernotice.identityservice.usermodule.enums.GenderEnum;
-import jakarta.persistence.*;
-import lombok.*;
+import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.enums.AuthProviderEnum;
+import com.jojolaptech.camel.model.postgres.enums.GenderEnum;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -1,7 +1,11 @@
 package com.jojolaptech.camel.model.postgres.iam;
 
-import com.tendernotice.identityservice.usermodule.enums.ContactTypeEnum;
-import jakarta.persistence.*;
+import com.jojolaptech.camel.model.postgres.enums.ContactTypeEnum;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

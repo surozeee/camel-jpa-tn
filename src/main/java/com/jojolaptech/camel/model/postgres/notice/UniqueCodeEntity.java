@@ -1,9 +1,9 @@
 package com.jojolaptech.camel.model.postgres.notice;
 
 
-import com.tendernotice.core.entity.BaseAuditEntity;
-import com.tendernotice.tenderservice.enums.DateFormatEnum;
-import com.tendernotice.tenderservice.enums.UniqueCodeStatusEnum;
+import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.enums.DateFormatEnum;
+import com.jojolaptech.camel.model.postgres.enums.UniqueCodeStatusEnum;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -34,3 +34,4 @@ public class UniqueCodeEntity extends BaseAuditEntity {
     private UUID userId;
 
 }
+

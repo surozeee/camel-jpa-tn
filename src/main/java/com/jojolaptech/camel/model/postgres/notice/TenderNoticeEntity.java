@@ -1,8 +1,8 @@
 package com.jojolaptech.camel.model.postgres.notice;
 
-import com.tendernotice.core.entity.BaseAuditEntity;
-import com.tendernotice.tenderservice.enums.DateFormatEnum;
-import com.tendernotice.tenderservice.enums.TenderNoticeStatus;
+import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.enums.DateFormatEnum;
+import com.jojolaptech.camel.model.postgres.enums.TenderNoticeStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -60,3 +60,4 @@ public class TenderNoticeEntity extends BaseAuditEntity {
 
 
 }
+

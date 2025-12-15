@@ -1,6 +1,6 @@
 package com.jojolaptech.camel.model.postgres.notice;
 
-import com.tendernotice.tenderservice.enums.ApiStatusEnum;
+import com.jojolaptech.camel.model.postgres.enums.ApiStatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
 
