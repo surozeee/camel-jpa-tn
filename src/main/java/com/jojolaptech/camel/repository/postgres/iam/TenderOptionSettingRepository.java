@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
+@Repository("pgTenderOptionSettingRepository")
 public interface TenderOptionSettingRepository
         extends JpaRepository<TenderOptionSettingEntity, UUID> {}
 

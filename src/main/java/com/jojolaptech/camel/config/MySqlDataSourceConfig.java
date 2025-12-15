@@ -61,6 +61,10 @@ public class MySqlDataSourceConfig {
         Map<String, Object> properties = new HashMap<>();
         properties.put("hibernate.hbm2ddl.auto", "none");
         properties.put("hibernate.dialect", dialect);
+        // Force camelCase entity names to snake_case table/column names.
+        properties.put(
+                "hibernate.physical_naming_strategy",
+                "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
         return properties;
     }
 }

@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
+@Repository("pgTemplateRepository")
 public interface TemplateRepository extends JpaRepository<TemplateEntity, UUID> {}
 
 

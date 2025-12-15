@@ -4,7 +4,7 @@ import com.jojolaptech.camel.model.postgres.iam.ClientEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
+@Repository("pgClientRepository")
 public interface ClientRepository extends JpaRepository<ClientEntity, String> {}
 
 
