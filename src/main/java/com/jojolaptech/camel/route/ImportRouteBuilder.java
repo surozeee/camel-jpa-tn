@@ -19,7 +19,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .maximumRedeliveries(3)
                 .redeliveryDelay(2000));
 
-        from("timer:mysql-import?fixedRate=true&period=5000")
+        from("timer:mysql-import?repeatCount=1&delay=0")
                 .routeId("mysql-to-postgres-import")
                 .setBody(exchange ->
                         sourceCustomerRepository.findTop50ByExportedFalseOrExportedIsNullOrderByIdAsc())
