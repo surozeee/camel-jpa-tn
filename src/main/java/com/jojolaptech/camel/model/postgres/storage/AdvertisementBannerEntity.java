@@ -2,12 +2,7 @@ package com.jojolaptech.camel.model.postgres.storage;
 
 import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
 import com.jojolaptech.camel.model.postgres.enums.StatusEnum;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -25,6 +25,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation "org.apache.camel.springboot:camel-spring-boot-starter:${camelVersion}"
     implementation "org.apache.camel:camel-jpa:${camelVersion}"
     implementation 'com.mysql:mysql-connector-j:9.5.0'

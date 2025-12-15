@@ -1,21 +1,9 @@
 package com.jojolaptech.camel.model.postgres.storage;
 
 import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
-import com.jojolaptech.camel.model.postgres.enums.ChannelEnum;
-import com.jojolaptech.camel.model.postgres.enums.LanguageEnum;
 import com.jojolaptech.camel.model.postgres.enums.StatusEnum;
-import com.jojolaptech.camel.model.postgres.enums.TopicEnum;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.io.Serial;
 
@@ -39,14 +27,11 @@ public class TemplateEntity extends BaseAuditEntity {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Enumerated(EnumType.STRING)
-    private TopicEnum topic;
+    private String topic;
 
-    @Enumerated(EnumType.STRING)
-    private LanguageEnum language;
+    private String language;
 
-    @Enumerated(EnumType.STRING)
-    private ChannelEnum channel;
+    private String channel;
 
     @Enumerated(EnumType.STRING)
     private StatusEnum status;

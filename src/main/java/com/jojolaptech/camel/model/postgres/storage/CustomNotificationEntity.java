@@ -1,23 +1,17 @@
 package com.jojolaptech.camel.model.postgres.storage;
 
+
 import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
 import com.jojolaptech.camel.model.postgres.enums.NotificationChannelEnum;
 import com.jojolaptech.camel.model.postgres.enums.NotificationStatusEnum;
 import com.jojolaptech.camel.model.postgres.enums.NotificationTypeEnum;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -43,10 +37,10 @@ public class CustomNotificationEntity extends BaseAuditEntity {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private String appNotification;
+    private Map<String, Object> appNotification;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private String webNotification;
+    private Map<String, Object> webNotification;
 }
 
