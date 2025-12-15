@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import lombok.Getter;
@@ -13,9 +12,6 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "customers")
-@NamedQuery(
-        name = "SourceCustomer.fetchUnexported",
-        query = "select c from SourceCustomer c where c.exported = false or c.exported is null")
 @Getter
 @Setter
 public class SourceCustomer {

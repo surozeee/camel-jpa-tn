@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SourceCustomerRepository extends JpaRepository<SourceCustomer, Long> {
 
-    List<SourceCustomer> findTop50ByExportedFalseOrderByIdAsc();
+    List<SourceCustomer> findTop50ByExportedFalseOrExportedIsNullOrderByIdAsc();
 }
 
