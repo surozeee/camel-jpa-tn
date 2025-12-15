@@ -27,7 +27,6 @@ public abstract class BaseAuditEntity implements Serializable {
     @Column(updatable = false)
     private LocalDateTime createdAt;
     private LocalDateTime lastModifiedAt;
-
     @CreatedBy
     @Column(updatable = false)
     private UUID createdBy;
