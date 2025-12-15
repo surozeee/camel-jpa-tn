@@ -1,4 +1,4 @@
-package com.jojolaptech.camel.model.mysql.tendersystem;
+package com.jojolaptech.camel.model.mysql.enums;
 
 public enum NotificationType {
     CUSTOM,
@@ -6,4 +6,5 @@ public enum NotificationType {
     CUSTOM_ANDROID,
     AUTO
 }
+
 

@@ -1,5 +1,6 @@
 package com.jojolaptech.camel.model.mysql.partner;
 
+import com.jojolaptech.camel.model.mysql.enums.CommissionType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

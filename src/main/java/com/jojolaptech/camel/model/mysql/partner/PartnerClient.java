@@ -1,5 +1,7 @@
 package com.jojolaptech.camel.model.mysql.partner;
 
+import com.jojolaptech.camel.model.mysql.enums.PartnerAssociatedBy;
+import com.jojolaptech.camel.model.mysql.enums.PartnerClientStatus;
 import com.jojolaptech.camel.model.mysql.sec.SecUser;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

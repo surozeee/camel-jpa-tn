@@ -1,5 +1,7 @@
 package com.jojolaptech.camel.model.mysql.payment;
 
+import com.jojolaptech.camel.model.mysql.enums.PaidFrom;
+import com.jojolaptech.camel.model.mysql.enums.PaymentStatus;
 import com.jojolaptech.camel.model.mysql.sec.SecUser;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

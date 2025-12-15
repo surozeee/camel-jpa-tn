@@ -1,5 +1,6 @@
 package com.jojolaptech.camel.model.mysql.tendersystem;
 
+import com.jojolaptech.camel.model.mysql.enums.Status;
 import com.jojolaptech.camel.model.mysql.sec.SecUser;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -110,6 +111,7 @@ public class Notice {
 }
 package com.jojolaptech.camel.model.mysql.tendersystem;
 
+import com.jojolaptech.camel.model.mysql.enums.Status;
 import com.jojolaptech.camel.model.mysql.sec.SecUser;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

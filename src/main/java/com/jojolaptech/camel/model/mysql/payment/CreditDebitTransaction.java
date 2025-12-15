@@ -1,5 +1,8 @@
 package com.jojolaptech.camel.model.mysql.payment;
 
+import com.jojolaptech.camel.model.mysql.enums.CardType;
+import com.jojolaptech.camel.model.mysql.enums.PaymentServiceProvider;
+import com.jojolaptech.camel.model.mysql.enums.PaymentStatus;
 import com.jojolaptech.camel.model.mysql.sec.SecUser;
 import com.jojolaptech.camel.model.mysql.tendersystem.PayPlan;
 import jakarta.persistence.Column;

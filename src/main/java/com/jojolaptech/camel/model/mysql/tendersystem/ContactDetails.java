@@ -1,5 +1,6 @@
 package com.jojolaptech.camel.model.mysql.tendersystem;
 
+import com.jojolaptech.camel.model.mysql.enums.GeneratedFrom;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

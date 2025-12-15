@@ -1,5 +1,8 @@
 package com.jojolaptech.camel.model.mysql.partner;
 
+import com.jojolaptech.camel.model.mysql.enums.CommissionAssignedCurrency;
+import com.jojolaptech.camel.model.mysql.enums.CommissionAssignedMethod;
+import com.jojolaptech.camel.model.mysql.enums.CommissionType;
 import com.jojolaptech.camel.model.mysql.tendersystem.UserPayment;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

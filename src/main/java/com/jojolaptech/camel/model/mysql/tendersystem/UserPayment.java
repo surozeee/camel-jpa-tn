@@ -1,5 +1,6 @@
 package com.jojolaptech.camel.model.mysql.tendersystem;
 
+import com.jojolaptech.camel.model.mysql.enums.PaidStatus;
 import com.jojolaptech.camel.model.mysql.sec.SecUser;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -82,6 +83,7 @@ public class UserPayment {
 }
 package com.jojolaptech.camel.model.mysql.tendersystem;
 
+import com.jojolaptech.camel.model.mysql.enums.PaidStatus;
 import com.jojolaptech.camel.model.mysql.sec.SecUser;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
