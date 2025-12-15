@@ -24,13 +24,17 @@ public abstract class BaseAuditEntity implements Serializable {
     private Long version;
 
     @CreationTimestamp
-    @Column(updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "last_modified_at")
     private LocalDateTime lastModifiedAt;
+
     @CreatedBy
-    @Column(updatable = false)
+    @Column(name = "created_by", updatable = false)
     private UUID createdBy;
 
+    @Column(name = "last_modified_by")
     private UUID lastModifiedBy;
 
     @PreUpdate

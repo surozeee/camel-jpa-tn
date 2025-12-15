@@ -8,7 +8,7 @@ spring:
       password: root
       driver-class-name: com.mysql.cj.jdbc.Driver
     postgres:
-      url: jdbc:postgresql://localhost:5432/awal
+      url: jdbc:postgresql://localhost:5432/target_db
       username: postgres
       password: password
       driver-class-name: org.postgresql.Driver
