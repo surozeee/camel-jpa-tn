@@ -2,6 +2,7 @@ package com.jojolaptech.camel.model.mysql.sec;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -43,10 +44,10 @@ public class SecUser {
     @Column
     private Boolean isVerified;
 
-    @OneToMany(mappedBy = "secUser")
+    @OneToMany(mappedBy = "secUser", fetch = FetchType.EAGER)
     private Set<SecUserSecRole> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "secUser")
+    @OneToMany(mappedBy = "secUser", fetch = FetchType.EAGER)
     private Set<SecondaryEmail> secondaryEmails = new HashSet<>();
 
     @OneToMany(mappedBy = "secUser")
