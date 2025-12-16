@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserInformationsRepository extends JpaRepository<UserInformations, Long> {
+
+    java.util.Optional<UserInformations> findFirstBySecUser_Id(Long secUserId);
 }
 
 

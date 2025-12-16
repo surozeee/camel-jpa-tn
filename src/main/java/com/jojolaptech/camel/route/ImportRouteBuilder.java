@@ -5,11 +5,15 @@ import com.jojolaptech.camel.repository.mysql.SourceCustomerRepository;
 import com.jojolaptech.camel.repository.mysql.sec.SecUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.camel.builder.RouteBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class ImportRouteBuilder extends RouteBuilder {
+
+    private static final Logger log = LoggerFactory.getLogger(ImportRouteBuilder.class);
 
     private final CustomerProcessor customerProcessor;
 //    private final SourceCustomerRepository sourceCustomerRepository;
@@ -25,6 +29,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .routeId("mysql-to-postgres-import")
                 .setBody(exchange ->
                         secUserRepository.findAll())
+                .log("Loaded ${body.size()} sec_user rows from MySQL")
                 .split(body())
                 .log("Consuming customer ${body.id}")
                 .process(customerProcessor);
