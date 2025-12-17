@@ -4,9 +4,11 @@ import com.jojolaptech.camel.processor.CategoryProcessor;
 import com.jojolaptech.camel.processor.CustomerProcessor;
 import com.jojolaptech.camel.processor.IndustryProcessor;
 import com.jojolaptech.camel.processor.NewsPaperProcessor;
+import com.jojolaptech.camel.processor.NewsletterSubscriptionProcessor;
 import com.jojolaptech.camel.processor.UniqueCodeProcessor;
 import com.jojolaptech.camel.processor.UserPaymentProcessor;
 import com.jojolaptech.camel.repository.mysql.IndustryRepository;
+import com.jojolaptech.camel.repository.mysql.NewsletterSubscriptionRepository;
 import com.jojolaptech.camel.repository.mysql.NewsPaperRepository;
 import com.jojolaptech.camel.repository.mysql.UniqueCodeTableRepository;
 import com.jojolaptech.camel.repository.mysql.UserPaymentRepository;
@@ -28,12 +30,14 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final CategoryProcessor categoryProcessor;
     private final NewsPaperProcessor newsPaperProcessor;
     private final IndustryProcessor industryProcessor;
+    private final NewsletterSubscriptionProcessor newsletterSubscriptionProcessor;
     private final UniqueCodeProcessor uniqueCodeProcessor;
     private final UserPaymentProcessor userPaymentProcessor;
     private final SecUserRepository secUserRepository;
     private final CategoryRepository categoryRepository;
     private final NewsPaperRepository newsPaperRepository;
     private final IndustryRepository industryRepository;
+    private final NewsletterSubscriptionRepository newsletterSubscriptionRepository;
     private final UniqueCodeTableRepository uniqueCodeTableRepository;
     private final UserPaymentRepository userPaymentRepository;
 
@@ -169,6 +173,38 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .split(body()).streaming()
                 .log("Consuming industry mysqlId=${body.id}, name=${body.name}")
                 .process(industryProcessor)
+                .end()
+                .endChoice()
+                .end();
+
+        // Route for newsletter subscription migration
+        from("timer:newsletter-subscription-import?repeatCount=1&delay=15000")
+                .routeId("newsletter-subscription-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                .process(exchange -> {
+                    int page = exchange.getProperty("page", Integer.class);
+                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
+                            org.springframework.data.domain.Sort.by("id").ascending());
+
+                    var resultPage = newsletterSubscriptionRepository.findAll(pageable);
+
+                    exchange.getMessage().setBody(resultPage.getContent());
+                    exchange.setProperty("hasNext", resultPage.hasNext());
+                    exchange.setProperty("page", page + 1);
+
+                    log.info("Fetched newsletter_subscription page={}, size={}, returnedRows={}, hasNext={}",
+                            page, PAGE_SIZE, resultPage.getNumberOfElements(), resultPage.hasNext());
+                })
+                .choice()
+                .when(simple("${body.size} == 0"))
+                .log("No newsletter_subscription rows in this page, continuing...")
+                .otherwise()
+                .split(body()).streaming()
+                .log("Consuming newsletter_subscription mysqlId=${body.id}, email=${body.emailAddress}")
+                .process(newsletterSubscriptionProcessor)
                 .end()
                 .endChoice()
                 .end();

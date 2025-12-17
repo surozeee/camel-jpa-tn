@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository("pgUserRepository")
 public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     java.util.Optional<UserEntity> findByMysqlId(Long mysqlId);
+    java.util.Optional<UserEntity> findByUsername(String username);
 }
 
 

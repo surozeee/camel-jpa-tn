@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository("pgUserInfoRepository")
-public interface UserInfoRepository extends JpaRepository<UserInfoEntity, UUID> {}
+public interface UserInfoRepository extends JpaRepository<UserInfoEntity, UUID> {
+    java.util.Optional<UserInfoEntity> findByEmailAddress(String emailAddress);
+    java.util.Optional<UserInfoEntity> findByUser_Id(UUID userId);
+}
 
 

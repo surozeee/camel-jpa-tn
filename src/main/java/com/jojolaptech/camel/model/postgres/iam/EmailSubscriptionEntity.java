@@ -15,6 +15,9 @@ import java.time.LocalDateTime;
 @Table(name = "email_subscription")
 public class EmailSubscriptionEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     @Column(name = "is_subscribed")
     private boolean subscribed;
 
