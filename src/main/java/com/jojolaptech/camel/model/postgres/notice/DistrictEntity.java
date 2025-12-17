@@ -23,6 +23,9 @@ import lombok.Setter;
 @Table(name = "district")
 public class DistrictEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     @Column(nullable = false, length = 100)
     private String name;
 
