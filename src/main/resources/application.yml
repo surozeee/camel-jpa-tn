@@ -17,6 +17,9 @@ spring:
 
 logging:
   level:
+    root: INFO
+    com.jojolaptech.camel: INFO
+    org.apache.camel: INFO
     org:
       hibernate:
         SQL: INFO

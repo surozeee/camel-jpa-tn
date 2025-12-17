@@ -39,14 +39,14 @@ public class CustomerProcessor implements Processor {
         user.setVersion(0L);
         user.setPassword(source.getPassword());
 
-        UserEntity savedUser = userRepository.save(user);
-        log.info("Saved user to Postgres with id={}", savedUser.getId());
+//        UserEntity savedUser = userRepository.save(user);
+//        log.info("Saved user to Postgres with id={}", savedUser.getId());
 
         userInformationsRepository
                 .findFirstBySecUser_Id(source.getId())
                 .ifPresentOrElse(
                         info -> {
-                            UserInfoEntity targetInfo = mapUserInfo(savedUser, info);
+                            UserInfoEntity targetInfo = mapUserInfo(user, info);
                             userInfoRepository.save(targetInfo);
                             log.info("Saved user_info for sec_user id={}", source.getId());
                         },
