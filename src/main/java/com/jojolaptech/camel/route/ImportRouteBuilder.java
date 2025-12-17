@@ -5,11 +5,13 @@ import com.jojolaptech.camel.processor.CustomerProcessor;
 import com.jojolaptech.camel.processor.IndustryProcessor;
 import com.jojolaptech.camel.processor.NewsPaperProcessor;
 import com.jojolaptech.camel.processor.NewsletterSubscriptionProcessor;
+import com.jojolaptech.camel.processor.ProductServiceProcessor;
 import com.jojolaptech.camel.processor.UniqueCodeProcessor;
 import com.jojolaptech.camel.processor.UserPaymentProcessor;
 import com.jojolaptech.camel.repository.mysql.IndustryRepository;
 import com.jojolaptech.camel.repository.mysql.NewsletterSubscriptionRepository;
 import com.jojolaptech.camel.repository.mysql.NewsPaperRepository;
+import com.jojolaptech.camel.repository.mysql.ProductServiceRepository;
 import com.jojolaptech.camel.repository.mysql.UniqueCodeTableRepository;
 import com.jojolaptech.camel.repository.mysql.UserPaymentRepository;
 import com.jojolaptech.camel.repository.mysql.sec.SecUserRepository;
@@ -28,6 +30,7 @@ public class ImportRouteBuilder extends RouteBuilder {
 
     private final CustomerProcessor customerProcessor;
     private final CategoryProcessor categoryProcessor;
+    private final ProductServiceProcessor productServiceProcessor;
     private final NewsPaperProcessor newsPaperProcessor;
     private final IndustryProcessor industryProcessor;
     private final NewsletterSubscriptionProcessor newsletterSubscriptionProcessor;
@@ -35,6 +38,7 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final UserPaymentProcessor userPaymentProcessor;
     private final SecUserRepository secUserRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductServiceRepository productServiceRepository;
     private final NewsPaperRepository newsPaperRepository;
     private final IndustryRepository industryRepository;
     private final NewsletterSubscriptionRepository newsletterSubscriptionRepository;
@@ -109,6 +113,38 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .split(body()).streaming()
                 .log("Consuming category mysqlId=${body.id}, name=${body.categoryName}")
                 .process(categoryProcessor)
+                .end()
+                .endChoice()
+                .end();
+
+        // Route for product_service migration to notice_category
+        from("timer:product-service-import?repeatCount=1&delay=2500")
+                .routeId("product-service-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                .process(exchange -> {
+                    int page = exchange.getProperty("page", Integer.class);
+                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
+                            org.springframework.data.domain.Sort.by("id").ascending());
+
+                    var resultPage = productServiceRepository.findAll(pageable);
+
+                    exchange.getMessage().setBody(resultPage.getContent());
+                    exchange.setProperty("hasNext", resultPage.hasNext());
+                    exchange.setProperty("page", page + 1);
+
+                    log.info("Fetched product_service page={}, size={}, returnedRows={}, hasNext={}",
+                            page, PAGE_SIZE, resultPage.getNumberOfElements(), resultPage.hasNext());
+                })
+                .choice()
+                .when(simple("${body.size} == 0"))
+                .log("No product_service rows in this page, continuing...")
+                .otherwise()
+                .split(body()).streaming()
+                .log("Consuming product_service mysqlId=${body.id}, name=${body.name}")
+                .process(productServiceProcessor)
                 .end()
                 .endChoice()
                 .end();
