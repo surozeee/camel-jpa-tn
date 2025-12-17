@@ -9,6 +9,8 @@ import com.jojolaptech.camel.processor.NoticeProcessor;
 import com.jojolaptech.camel.processor.ProductServiceProcessor;
 import com.jojolaptech.camel.processor.TagProcessor;
 import com.jojolaptech.camel.processor.TenderClassificationProcessor;
+import com.jojolaptech.camel.processor.TipsCategoryProcessor;
+import com.jojolaptech.camel.processor.TipsProcessor;
 import com.jojolaptech.camel.processor.UniqueCodeProcessor;
 import com.jojolaptech.camel.processor.UserPaymentProcessor;
 import com.jojolaptech.camel.repository.mysql.IndustryRepository;
@@ -18,6 +20,8 @@ import com.jojolaptech.camel.repository.mysql.NoticeRepository;
 import com.jojolaptech.camel.repository.mysql.ProductServiceRepository;
 import com.jojolaptech.camel.repository.mysql.TagRepository;
 import com.jojolaptech.camel.repository.mysql.TenderClassificationRepository;
+import com.jojolaptech.camel.repository.mysql.TipsCategoryRepository;
+import com.jojolaptech.camel.repository.mysql.TipsRepository;
 import com.jojolaptech.camel.repository.mysql.UniqueCodeTableRepository;
 import com.jojolaptech.camel.repository.mysql.UserPaymentRepository;
 import com.jojolaptech.camel.repository.mysql.sec.SecUserRepository;
@@ -38,6 +42,8 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final CategoryProcessor categoryProcessor;
     private final ProductServiceProcessor productServiceProcessor;
     private final TenderClassificationProcessor tenderClassificationProcessor;
+    private final TipsCategoryProcessor tipsCategoryProcessor;
+    private final TipsProcessor tipsProcessor;
     private final NewsPaperProcessor newsPaperProcessor;
     private final IndustryProcessor industryProcessor;
     private final NoticeProcessor noticeProcessor;
@@ -49,6 +55,8 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final CategoryRepository categoryRepository;
     private final ProductServiceRepository productServiceRepository;
     private final TenderClassificationRepository tenderClassificationRepository;
+    private final TipsCategoryRepository tipsCategoryRepository;
+    private final TipsRepository tipsRepository;
     private final NewsPaperRepository newsPaperRepository;
     private final IndustryRepository industryRepository;
     private final NoticeRepository noticeRepository;
@@ -125,6 +133,70 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .split(body()).streaming()
                 .log("Consuming category mysqlId=${body.id}, name=${body.categoryName}")
                 .process(categoryProcessor)
+                .end()
+                .endChoice()
+                .end();
+
+        // Route for tips_category migration
+        from("timer:tips-category-import?repeatCount=1&delay=2200")
+                .routeId("tips-category-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                .process(exchange -> {
+                    int page = exchange.getProperty("page", Integer.class);
+                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
+                            org.springframework.data.domain.Sort.by("id").ascending());
+
+                    var resultPage = tipsCategoryRepository.findAll(pageable);
+
+                    exchange.getMessage().setBody(resultPage.getContent());
+                    exchange.setProperty("hasNext", resultPage.hasNext());
+                    exchange.setProperty("page", page + 1);
+
+                    log.info("Fetched tips_category page={}, size={}, returnedRows={}, hasNext={}",
+                            page, PAGE_SIZE, resultPage.getNumberOfElements(), resultPage.hasNext());
+                })
+                .choice()
+                .when(simple("${body.size} == 0"))
+                .log("No tips_category rows in this page, continuing...")
+                .otherwise()
+                .split(body()).streaming()
+                .log("Consuming tips_category mysqlId=${body.id}, name=${body.tipCategory}")
+                .process(tipsCategoryProcessor)
+                .end()
+                .endChoice()
+                .end();
+
+        // Route for tips migration
+        from("timer:tips-import?repeatCount=1&delay=2400")
+                .routeId("tips-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                .process(exchange -> {
+                    int page = exchange.getProperty("page", Integer.class);
+                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
+                            org.springframework.data.domain.Sort.by("id").ascending());
+
+                    var resultPage = tipsRepository.findAll(pageable);
+
+                    exchange.getMessage().setBody(resultPage.getContent());
+                    exchange.setProperty("hasNext", resultPage.hasNext());
+                    exchange.setProperty("page", page + 1);
+
+                    log.info("Fetched tips page={}, size={}, returnedRows={}, hasNext={}",
+                            page, PAGE_SIZE, resultPage.getNumberOfElements(), resultPage.hasNext());
+                })
+                .choice()
+                .when(simple("${body.size} == 0"))
+                .log("No tips rows in this page, continuing...")
+                .otherwise()
+                .split(body()).streaming()
+                .log("Consuming tips mysqlId=${body.id}, tipNote length=${body.tipNote != null ? body.tipNote.length() : 0}")
+                .process(tipsProcessor)
                 .end()
                 .endChoice()
                 .end();

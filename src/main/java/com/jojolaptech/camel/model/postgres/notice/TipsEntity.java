@@ -15,6 +15,9 @@ import lombok.*;
 @Builder
 public class TipsEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     private String title;
 
     @Column(columnDefinition = "TEXT")

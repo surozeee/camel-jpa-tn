@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository("pgTipsCategoryRepository")
-public interface TipsCategoryRepository extends JpaRepository<TipsCategoryEntity, UUID> {}
+public interface TipsCategoryRepository extends JpaRepository<TipsCategoryEntity, UUID> {
+    java.util.Optional<TipsCategoryEntity> findByMysqlId(Long mysqlId);
+}
 
 

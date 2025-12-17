@@ -15,6 +15,9 @@ import lombok.*;
 @Table(name = "tips_category")
 public class TipsCategoryEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     private String name;
 
     @Column(columnDefinition = "TEXT")
