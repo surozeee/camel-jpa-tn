@@ -2,8 +2,10 @@ package com.jojolaptech.camel.route;
 
 import com.jojolaptech.camel.processor.CategoryProcessor;
 import com.jojolaptech.camel.processor.CustomerProcessor;
+import com.jojolaptech.camel.processor.NewsPaperProcessor;
 import com.jojolaptech.camel.processor.UniqueCodeProcessor;
 import com.jojolaptech.camel.processor.UserPaymentProcessor;
+import com.jojolaptech.camel.repository.mysql.NewsPaperRepository;
 import com.jojolaptech.camel.repository.mysql.UniqueCodeTableRepository;
 import com.jojolaptech.camel.repository.mysql.UserPaymentRepository;
 import com.jojolaptech.camel.repository.mysql.sec.SecUserRepository;
@@ -22,10 +24,12 @@ public class ImportRouteBuilder extends RouteBuilder {
 
     private final CustomerProcessor customerProcessor;
     private final CategoryProcessor categoryProcessor;
+    private final NewsPaperProcessor newsPaperProcessor;
     private final UniqueCodeProcessor uniqueCodeProcessor;
     private final UserPaymentProcessor userPaymentProcessor;
     private final SecUserRepository secUserRepository;
     private final CategoryRepository categoryRepository;
+    private final NewsPaperRepository newsPaperRepository;
     private final UniqueCodeTableRepository uniqueCodeTableRepository;
     private final UserPaymentRepository userPaymentRepository;
 
@@ -97,6 +101,38 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .split(body()).streaming()
                 .log("Consuming category mysqlId=${body.id}, name=${body.categoryName}")
                 .process(categoryProcessor)
+                .end()
+                .endChoice()
+                .end();
+
+        // Route for newspaper migration
+        from("timer:newspaper-import?repeatCount=1&delay=3000")
+                .routeId("newspaper-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                .process(exchange -> {
+                    int page = exchange.getProperty("page", Integer.class);
+                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
+                            org.springframework.data.domain.Sort.by("id").ascending());
+
+                    var resultPage = newsPaperRepository.findAll(pageable);
+
+                    exchange.getMessage().setBody(resultPage.getContent());
+                    exchange.setProperty("hasNext", resultPage.hasNext());
+                    exchange.setProperty("page", page + 1);
+
+                    log.info("Fetched news_paper page={}, size={}, returnedRows={}, hasNext={}",
+                            page, PAGE_SIZE, resultPage.getNumberOfElements(), resultPage.hasNext());
+                })
+                .choice()
+                .when(simple("${body.size} == 0"))
+                .log("No news_paper rows in this page, continuing...")
+                .otherwise()
+                .split(body()).streaming()
+                .log("Consuming news_paper mysqlId=${body.id}, name=${body.name}")
+                .process(newsPaperProcessor)
                 .end()
                 .endChoice()
                 .end();
