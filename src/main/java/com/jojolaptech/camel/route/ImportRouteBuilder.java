@@ -7,6 +7,7 @@ import com.jojolaptech.camel.processor.NewsPaperProcessor;
 import com.jojolaptech.camel.processor.NewsletterSubscriptionProcessor;
 import com.jojolaptech.camel.processor.NoticeProcessor;
 import com.jojolaptech.camel.processor.ProductServiceProcessor;
+import com.jojolaptech.camel.processor.TagProcessor;
 import com.jojolaptech.camel.processor.TenderClassificationProcessor;
 import com.jojolaptech.camel.processor.UniqueCodeProcessor;
 import com.jojolaptech.camel.processor.UserPaymentProcessor;
@@ -15,6 +16,7 @@ import com.jojolaptech.camel.repository.mysql.NewsletterSubscriptionRepository;
 import com.jojolaptech.camel.repository.mysql.NewsPaperRepository;
 import com.jojolaptech.camel.repository.mysql.NoticeRepository;
 import com.jojolaptech.camel.repository.mysql.ProductServiceRepository;
+import com.jojolaptech.camel.repository.mysql.TagRepository;
 import com.jojolaptech.camel.repository.mysql.TenderClassificationRepository;
 import com.jojolaptech.camel.repository.mysql.UniqueCodeTableRepository;
 import com.jojolaptech.camel.repository.mysql.UserPaymentRepository;
@@ -39,6 +41,7 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final NewsPaperProcessor newsPaperProcessor;
     private final IndustryProcessor industryProcessor;
     private final NoticeProcessor noticeProcessor;
+    private final TagProcessor tagProcessor;
     private final NewsletterSubscriptionProcessor newsletterSubscriptionProcessor;
     private final UniqueCodeProcessor uniqueCodeProcessor;
     private final UserPaymentProcessor userPaymentProcessor;
@@ -49,6 +52,7 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final NewsPaperRepository newsPaperRepository;
     private final IndustryRepository industryRepository;
     private final NoticeRepository noticeRepository;
+    private final TagRepository tagRepository;
     private final NewsletterSubscriptionRepository newsletterSubscriptionRepository;
     private final UniqueCodeTableRepository uniqueCodeTableRepository;
     private final UserPaymentRepository userPaymentRepository;
@@ -281,6 +285,38 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .split(body()).streaming()
                 .log("Consuming notice mysqlId=${body.id}, provider=${body.noticeProvider}")
                 .process(noticeProcessor)
+                .end()
+                .endChoice()
+                .end();
+
+        // Route for tag migration
+        from("timer:tag-import?repeatCount=1&delay=7000")
+                .routeId("tag-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                .process(exchange -> {
+                    int page = exchange.getProperty("page", Integer.class);
+                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
+                            org.springframework.data.domain.Sort.by("id").ascending());
+
+                    var resultPage = tagRepository.findAll(pageable);
+
+                    exchange.getMessage().setBody(resultPage.getContent());
+                    exchange.setProperty("hasNext", resultPage.hasNext());
+                    exchange.setProperty("page", page + 1);
+
+                    log.info("Fetched tag page={}, size={}, returnedRows={}, hasNext={}",
+                            page, PAGE_SIZE, resultPage.getNumberOfElements(), resultPage.hasNext());
+                })
+                .choice()
+                .when(simple("${body.size} == 0"))
+                .log("No tag rows in this page, continuing...")
+                .otherwise()
+                .split(body()).streaming()
+                .log("Consuming tag mysqlId=${body.id}, name=${body.name}")
+                .process(tagProcessor)
                 .end()
                 .endChoice()
                 .end();
