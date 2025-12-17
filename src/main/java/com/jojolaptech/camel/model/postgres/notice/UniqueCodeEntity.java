@@ -4,6 +4,7 @@ package com.jojolaptech.camel.model.postgres.notice;
 import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
 import com.jojolaptech.camel.model.postgres.enums.DateFormatEnum;
 import com.jojolaptech.camel.model.postgres.enums.UniqueCodeStatusEnum;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -21,6 +22,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "unique_code")
 public class UniqueCodeEntity extends BaseAuditEntity {
+
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
 
     @Enumerated(EnumType.STRING)
     private DateFormatEnum dateFormat;
