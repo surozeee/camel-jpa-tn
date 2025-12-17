@@ -35,6 +35,9 @@ import java.util.Set;
 })
 public class UserEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     @Column(name = "username", unique = true, nullable = false, length = 150)
     private String username;
 

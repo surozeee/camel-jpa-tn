@@ -24,6 +24,9 @@ public class TenderNoticeEntity extends BaseAuditEntity {
     @Enumerated(EnumType.STRING)
     private DateFormatEnum dateFormat;
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     @Column(nullable = false)
     private UUID sourceId;
     private UUID districtId;

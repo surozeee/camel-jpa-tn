@@ -33,6 +33,7 @@ public class CustomerProcessor implements Processor {
         log.info("Migrating sec_user id={}, username={}", source.getId(), source.getUsername());
 
         UserEntity user = new UserEntity();
+        user.setMysqlId(source.getId());
         user.setUsername(source.getUsername());
         user.setStatus(Boolean.TRUE.equals(source.getIsVerified()) ? UserStatusEnum.ACTIVE : UserStatusEnum.PENDING);
         user.setVersion(0L);

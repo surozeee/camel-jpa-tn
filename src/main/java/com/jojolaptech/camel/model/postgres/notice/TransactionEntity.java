@@ -25,6 +25,9 @@ import java.util.UUID;
 @Table(name = "transaction")
 public class TransactionEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     private String referenceNumber;
 
     @Enumerated(EnumType.STRING)
