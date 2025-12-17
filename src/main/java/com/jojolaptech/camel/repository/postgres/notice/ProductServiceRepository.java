@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository("pgProductServiceRepository")
 public interface ProductServiceRepository
-        extends JpaRepository<ProductServiceEntity, UUID> {}
+        extends JpaRepository<ProductServiceEntity, UUID> {
+    java.util.Optional<ProductServiceEntity> findByMysqlId(Long mysqlId);
+}
 
 

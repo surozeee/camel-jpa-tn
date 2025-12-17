@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository("pgNewsPaperRepository")
-public interface NewsPaperRepository extends JpaRepository<NewsPaperEntity, UUID> {}
+public interface NewsPaperRepository extends JpaRepository<NewsPaperEntity, UUID> {
+    java.util.Optional<NewsPaperEntity> findByMysqlId(Long mysqlId);
+}
 
 

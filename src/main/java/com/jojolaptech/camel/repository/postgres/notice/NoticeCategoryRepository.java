@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository("pgNoticeCategoryRepository")
 public interface NoticeCategoryRepository
-        extends JpaRepository<NoticeCategoryEntity, UUID> {}
+        extends JpaRepository<NoticeCategoryEntity, UUID> {
+    java.util.Optional<NoticeCategoryEntity> findByMysqlId(Long mysqlId);
+}
 
 

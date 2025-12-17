@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository("pgIndustryRepository")
-public interface IndustryRepository extends JpaRepository<IndustryEntity, UUID> {}
+public interface IndustryRepository extends JpaRepository<IndustryEntity, UUID> {
+    java.util.Optional<IndustryEntity> findByMysqlId(Long mysqlId);
+}
 
 

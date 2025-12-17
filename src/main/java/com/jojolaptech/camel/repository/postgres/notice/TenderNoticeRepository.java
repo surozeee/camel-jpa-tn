@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository("pgTenderNoticeRepository")
-public interface TenderNoticeRepository extends JpaRepository<TenderNoticeEntity, UUID> {}
+public interface TenderNoticeRepository extends JpaRepository<TenderNoticeEntity, UUID> {
+    java.util.Optional<TenderNoticeEntity> findByMysqlId(Long mysqlId);
+}
 
 
