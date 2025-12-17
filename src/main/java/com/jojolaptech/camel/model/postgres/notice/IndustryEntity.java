@@ -14,6 +14,9 @@ import lombok.*;
 @Table(name = "industry")
 public class IndustryEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     private String name;
 
     @Enumerated(EnumType.STRING)
