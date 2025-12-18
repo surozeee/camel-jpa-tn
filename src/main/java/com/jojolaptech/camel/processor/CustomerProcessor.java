@@ -56,7 +56,7 @@ public class CustomerProcessor implements Processor {
         user.setRoles(Set.of(role));
 
 
-        UserInformations userInformations = userInformationsRepository.findBySecUser(source);
+        UserInformations userInformations = userInformationsRepository.findFirstBySecUser(source);
         
         // Only create UserInfoEntity if userInformations exists
         if (userInformations != null) {

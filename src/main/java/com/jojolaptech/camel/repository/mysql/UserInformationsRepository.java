@@ -11,7 +11,7 @@ public interface UserInformationsRepository extends JpaRepository<UserInformatio
 
     UserInformations findFirstBySecUser_Id(Long secUserId);
 
-    UserInformations findBySecUser(SecUser user);
+    UserInformations findFirstBySecUser(SecUser user);
 }
 
 
