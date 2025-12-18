@@ -57,18 +57,24 @@ public class CustomerProcessor implements Processor {
 
 
         UserInformations userInformations = userInformationsRepository.findBySecUser(source);
-        UserInfoEntity userInfoEntity = mapUserInfo(user, userInformations);
-        UserPayment userPayment = userPaymentRepository.findBySecUserOrderByExpireDateDesc(source);
-        userInfoEntity.setSubscriptionExpiryDate(
-                userPayment != null
-                        ? LocalDateTime.ofInstant(
-                        userPayment.getExpireDate(),
-                        ZoneId.systemDefault()
-                )
-                        : null
-        );
+        
+        // Only create UserInfoEntity if userInformations exists
+        if (userInformations != null) {
+            UserInfoEntity userInfoEntity = mapUserInfo(user, userInformations);
+            UserPayment userPayment = userPaymentRepository.findFirstBySecUserOrderByExpireDateDesc(source);
+            userInfoEntity.setSubscriptionExpiryDate(
+                    userPayment != null && userPayment.getExpireDate() != null
+                            ? LocalDateTime.ofInstant(
+                            userPayment.getExpireDate(),
+                            ZoneId.systemDefault()
+                    )
+                            : null
+            );
+            user.setUserInfo(userInfoEntity);
+        } else {
+            log.warn("No UserInformations found for sec_user id={}, skipping user info mapping", source.getId());
+        }
 
-        user.setUserInfo(userInfoEntity);
         userRepository.save(user);
     }
 

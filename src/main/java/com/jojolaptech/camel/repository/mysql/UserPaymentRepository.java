@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserPaymentRepository extends JpaRepository<UserPayment, Long> {
 
-    UserPayment findBySecUserOrderByExpireDateDesc(SecUser source);
+    UserPayment findFirstBySecUserOrderByExpireDateDesc(SecUser source);
 }
 
 
