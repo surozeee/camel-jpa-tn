@@ -25,8 +25,14 @@ public class ProductServiceProcessor implements Processor {
 
         log.info("Migrating product_service id={}, name={} to notice_category", source.getId(), source.getName());
 
+        // Check if already exists by name (don't check mysqlId as category uses same table with potentially same IDs)
+        if (noticeCategoryRepository.existsByName(source.getName())) {
+            log.info("Skipping product_service id={}, name={} already exists", source.getId(), source.getName());
+            return;
+        }
+
         NoticeCategoryEntity target = new NoticeCategoryEntity();
-        target.setMysqlId(source.getId());
+        // Don't set mysqlId for product_service to avoid conflicts with category IDs
         target.setName(source.getName());
         // Status will be set to ACTIVE by @PrePersist
 

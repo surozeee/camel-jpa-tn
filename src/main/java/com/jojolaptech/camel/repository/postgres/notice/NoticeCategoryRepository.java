@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 public interface NoticeCategoryRepository
         extends JpaRepository<NoticeCategoryEntity, UUID> {
     java.util.Optional<NoticeCategoryEntity> findByMysqlId(Long mysqlId);
+    boolean existsByName(String name);
+    boolean existsByMysqlId(Long mysqlId);
 }
 
 

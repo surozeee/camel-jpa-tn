@@ -74,7 +74,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .maximumRedeliveries(3)
                 .redeliveryDelay(2000));
 
-        from("timer:mysql-import?repeatCount=1&delay=0")
+        /*from("timer:mysql-import?repeatCount=1&delay=0")
                 .routeId("mysql-to-postgres-import")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -103,10 +103,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(customerProcessor)
                 .end()
                 .endChoice()
-                .end();
+                .end();*/
 
-        /*// Route for category migration
-        from("timer:category-import?repeatCount=1&delay=2000")
+        // Route for category migration
+        /*from("timer:category-import?repeatCount=1&delay=2000")
                 .routeId("category-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -167,10 +167,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(tipsCategoryProcessor)
                 .end()
                 .endChoice()
-                .end();
+                .end();*/
 
         // Route for tips migration
-        from("timer:tips-import?repeatCount=1&delay=2400")
+        /*from("timer:tips-import?repeatCount=1&delay=2400")
                 .routeId("tips-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -195,11 +195,11 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .log("No tips rows in this page, continuing...")
                 .otherwise()
                 .split(body()).streaming()
-                .log("Consuming tips mysqlId=${body.id}, tipNote length=${body.tipNote != null ? body.tipNote.length() : 0}")
+                .log("Consuming tips mysqlId=${body.id}")
                 .process(tipsProcessor)
                 .end()
                 .endChoice()
-                .end();
+                .end();*/
 
         // Route for product_service migration to notice_category
         from("timer:product-service-import?repeatCount=1&delay=2500")
@@ -264,7 +264,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .end()
                 .endChoice()
                 .end();
-
+/*
         // Route for newspaper migration
         from("timer:newspaper-import?repeatCount=1&delay=3000")
                 .routeId("newspaper-migration")
@@ -327,10 +327,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(industryProcessor)
                 .end()
                 .endChoice()
-                .end();
+                .end();*/
 
         // Route for notice migration to tender_notice
-        from("timer:notice-import?repeatCount=1&delay=6000")
+        /*from("timer:notice-import?repeatCount=1&delay=6000")
                 .routeId("notice-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)

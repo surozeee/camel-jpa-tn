@@ -25,6 +25,16 @@ public class CategoryProcessor implements Processor {
 
         log.info("Migrating category id={}, name={}", source.getId(), source.getCategoryName());
 
+        // Check if already exists by mysqlId or name
+        if (noticeCategoryRepository.existsByMysqlId(source.getId())) {
+            log.info("Skipping category id={}, already exists by mysqlId", source.getId());
+            return;
+        }
+        if (noticeCategoryRepository.existsByName(source.getCategoryName())) {
+            log.info("Skipping category id={}, name={} already exists", source.getId(), source.getCategoryName());
+            return;
+        }
+
         NoticeCategoryEntity target = new NoticeCategoryEntity();
         target.setMysqlId(source.getId());
         target.setName(source.getCategoryName());
