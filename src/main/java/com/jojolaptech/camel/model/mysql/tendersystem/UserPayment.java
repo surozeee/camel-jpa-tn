@@ -78,6 +78,6 @@ public class UserPayment {
     private SecUser secUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pay_plan_id")
+    @JoinColumn(name = "pay_plane_id")
     private PayPlan payPlan;
 }

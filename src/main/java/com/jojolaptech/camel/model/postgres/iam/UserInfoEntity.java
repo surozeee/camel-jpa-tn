@@ -31,6 +31,7 @@ public class UserInfoEntity extends BaseAuditEntity {
 
     private String name;
     private String emailAddress;
+    private String secondaryEmail;
     private String mobileNumber;
     private String telePhoneNumber;
     @Enumerated(EnumType.STRING)

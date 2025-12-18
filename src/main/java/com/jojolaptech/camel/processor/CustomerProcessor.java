@@ -2,10 +2,14 @@ package com.jojolaptech.camel.processor;
 
 import com.jojolaptech.camel.model.mysql.sec.SecUser;
 import com.jojolaptech.camel.model.mysql.tendersystem.UserInformations;
+import com.jojolaptech.camel.model.mysql.tendersystem.UserPayment;
 import com.jojolaptech.camel.model.postgres.enums.UserStatusEnum;
+import com.jojolaptech.camel.model.postgres.iam.RoleEntity;
 import com.jojolaptech.camel.model.postgres.iam.UserEntity;
 import com.jojolaptech.camel.model.postgres.iam.UserInfoEntity;
 import com.jojolaptech.camel.repository.mysql.UserInformationsRepository;
+import com.jojolaptech.camel.repository.mysql.UserPaymentRepository;
+import com.jojolaptech.camel.repository.postgres.iam.RoleRepository;
 import com.jojolaptech.camel.repository.postgres.iam.UserInfoRepository;
 import com.jojolaptech.camel.repository.postgres.iam.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +20,11 @@ import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Set;
+
 @Component
 @RequiredArgsConstructor
 public class CustomerProcessor implements Processor {
@@ -23,8 +32,10 @@ public class CustomerProcessor implements Processor {
     private static final Logger log = LoggerFactory.getLogger(CustomerProcessor.class);
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final UserInfoRepository userInfoRepository;
     private final UserInformationsRepository userInformationsRepository;
+    private final UserPaymentRepository userPaymentRepository;
 
     @Override
     public void process(Exchange exchange) throws InvalidPayloadException {
@@ -41,17 +52,24 @@ public class CustomerProcessor implements Processor {
 
 //        UserEntity savedUser = userRepository.save(user);
 //        log.info("Saved user to Postgres with id={}", savedUser.getId());
+        RoleEntity role = roleRepository.findByName("CUSTOMER");
+        user.setRoles(Set.of(role));
 
-        userInformationsRepository
-                .findFirstBySecUser_Id(source.getId())
-                .ifPresentOrElse(
-                        info -> {
-                            UserInfoEntity targetInfo = mapUserInfo(user, info);
-                            userInfoRepository.save(targetInfo);
-                            log.info("Saved user_info for sec_user id={}", source.getId());
-                        },
-                        () -> log.info("No user_informations row found for sec_user id={}", source.getId()));
 
+        UserInformations userInformations = userInformationsRepository.findBySecUser(source);
+        UserInfoEntity userInfoEntity = mapUserInfo(user, userInformations);
+        UserPayment userPayment = userPaymentRepository.findBySecUserOrderByExpireDateDesc(source);
+        userInfoEntity.setSubscriptionExpiryDate(
+                userPayment != null
+                        ? LocalDateTime.ofInstant(
+                        userPayment.getExpireDate(),
+                        ZoneId.systemDefault()
+                )
+                        : null
+        );
+
+        user.setUserInfo(userInfoEntity);
+        userRepository.save(user);
     }
 
     private UserInfoEntity mapUserInfo(UserEntity savedUser, UserInformations info) {

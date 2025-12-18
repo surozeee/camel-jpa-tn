@@ -48,7 +48,11 @@ public class UserEntity extends BaseAuditEntity {
     private UserStatusEnum status;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles", inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),        // FK to User table
+            inverseJoinColumns = @JoinColumn(name = "role_id")  // FK to Role table
+    )
     private Set<RoleEntity> roles = new HashSet<>();
 
 

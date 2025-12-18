@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository("pgScopeRepository")
-public interface ScopeRepository extends JpaRepository<ScopeEntity, UUID> {}
+public interface ScopeRepository extends JpaRepository<ScopeEntity, UUID> {
+    boolean existsByName(String name);
+}
 
 
