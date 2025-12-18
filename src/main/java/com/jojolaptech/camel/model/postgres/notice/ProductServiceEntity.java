@@ -16,6 +16,9 @@ import lombok.Setter;
 @Table(name = "product_service")
 public class ProductServiceEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     private String name;
 
     @Enumerated(EnumType.STRING)

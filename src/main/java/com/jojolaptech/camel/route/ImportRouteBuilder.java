@@ -105,7 +105,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .endChoice()
                 .end();
 
-        // Route for category migration
+        /*// Route for category migration
         from("timer:category-import?repeatCount=1&delay=2000")
                 .routeId("category-migration")
                 .setProperty("page").constant(0)
@@ -487,7 +487,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(userPaymentProcessor)
                 .end()
                 .endChoice()
-                .end();
+                .end();*/
     }
 }
 
