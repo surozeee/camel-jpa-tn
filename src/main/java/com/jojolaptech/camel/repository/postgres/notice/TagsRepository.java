@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository("pgTagsRepository")
-public interface TagsRepository extends JpaRepository<TagsEntity, UUID> {}
+public interface TagsRepository extends JpaRepository<TagsEntity, UUID> {
+    boolean existsByMysqlId(Long mysqlId);
+}
 
 

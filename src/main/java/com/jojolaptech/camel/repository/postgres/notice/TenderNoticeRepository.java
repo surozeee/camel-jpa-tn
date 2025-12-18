@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository("pgTenderNoticeRepository")
 public interface TenderNoticeRepository extends JpaRepository<TenderNoticeEntity, UUID> {
     java.util.Optional<TenderNoticeEntity> findByMysqlId(Long mysqlId);
+    boolean existsByMysqlId(Long mysqlId);
 }
 
 

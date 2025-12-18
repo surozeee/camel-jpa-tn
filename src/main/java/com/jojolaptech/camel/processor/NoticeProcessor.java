@@ -38,6 +38,12 @@ public class NoticeProcessor implements Processor {
 
         log.info("Migrating notice id={}, provider={}", source.getId(), source.getNoticeProvider());
 
+        // Check if already exists
+        if (tenderNoticeRepository.existsByMysqlId(source.getId())) {
+            log.info("Skipping notice id={}, already exists", source.getId());
+            return;
+        }
+
         // Look up related entities by mysqlId
         UUID categoryId = null;
         if (source.getCategory() != null && source.getCategory().getId() != null) {

@@ -25,6 +25,12 @@ public class NewsPaperProcessor implements Processor {
 
         log.info("Migrating news_paper id={}, name={}", source.getId(), source.getName());
 
+        // Check if already exists
+        if (newsPaperRepository.existsByMysqlId(source.getId())) {
+            log.info("Skipping news_paper id={}, already exists", source.getId());
+            return;
+        }
+
         NewsPaperEntity target = new NewsPaperEntity();
         target.setMysqlId(source.getId());
         target.setName(source.getName());

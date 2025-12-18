@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository("pgUniqueCodeRepository")
-public interface UniqueCodeRepository extends JpaRepository<UniqueCodeEntity, UUID> {}
+public interface UniqueCodeRepository extends JpaRepository<UniqueCodeEntity, UUID> {
+    boolean existsByMysqlId(Long mysqlId);
+}
 
 

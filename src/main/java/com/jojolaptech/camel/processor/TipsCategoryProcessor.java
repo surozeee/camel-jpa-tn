@@ -25,6 +25,12 @@ public class TipsCategoryProcessor implements Processor {
 
         log.info("Migrating tips_category id={}, name={}", source.getId(), source.getTipCategory());
 
+        // Check if already exists
+        if (tipsCategoryRepository.existsByMysqlId(source.getId())) {
+            log.info("Skipping tips_category id={}, already exists", source.getId());
+            return;
+        }
+
         TipsCategoryEntity target = new TipsCategoryEntity();
         target.setMysqlId(source.getId());
         target.setName(source.getTipCategory());

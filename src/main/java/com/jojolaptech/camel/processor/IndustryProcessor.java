@@ -25,6 +25,12 @@ public class IndustryProcessor implements Processor {
 
         log.info("Migrating industry id={}, name={}", source.getId(), source.getName());
 
+        // Check if already exists
+        if (industryRepository.existsByMysqlId(source.getId())) {
+            log.info("Skipping industry id={}, already exists", source.getId());
+            return;
+        }
+
         IndustryEntity target = new IndustryEntity();
         target.setMysqlId(source.getId());
         target.setName(source.getName());

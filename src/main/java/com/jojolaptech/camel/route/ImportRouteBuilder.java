@@ -202,7 +202,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .end();*/
 
         // Route for product_service migration to notice_category
-        from("timer:product-service-import?repeatCount=1&delay=2500")
+        /*from("timer:product-service-import?repeatCount=1&delay=2500")
                 .routeId("product-service-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -231,10 +231,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(productServiceProcessor)
                 .end()
                 .endChoice()
-                .end();
+                .end();*/
 
         // Route for tender_classification migration to district
-        from("timer:tender-classification-import?repeatCount=1&delay=2800")
+        /*from("timer:tender-classification-import?repeatCount=1&delay=2800")
                 .routeId("tender-classification-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -263,8 +263,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(tenderClassificationProcessor)
                 .end()
                 .endChoice()
-                .end();
-/*
+                .end();*/
+
         // Route for newspaper migration
         from("timer:newspaper-import?repeatCount=1&delay=3000")
                 .routeId("newspaper-migration")
@@ -298,7 +298,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .end();
 
         // Route for industry migration
-        from("timer:industry-import?repeatCount=1&delay=4000")
+        /*from("timer:industry-import?repeatCount=1&delay=4000")
                 .routeId("industry-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)

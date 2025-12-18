@@ -35,6 +35,12 @@ public class UniqueCodeProcessor implements Processor {
 
         log.info("Migrating unique_code_table id={}, code={}", source.getId(), source.getUniqueCode());
 
+        // Check if already exists
+        if (uniqueCodeRepository.existsByMysqlId(source.getId())) {
+            log.info("Skipping unique_code id={}, already exists", source.getId());
+            return;
+        }
+
         // Look up the user by mysqlId
         UUID userId = null;
         if (source.getSecUser() != null && source.getSecUser().getId() != null) {

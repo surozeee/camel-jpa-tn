@@ -34,6 +34,12 @@ public class TagProcessor implements Processor {
 
         log.info("Migrating tag id={}, name={}", source.getId(), source.getName());
 
+        // Check if already exists
+        if (tagsRepository.existsByMysqlId(source.getId())) {
+            log.info("Skipping tag id={}, already exists", source.getId());
+            return;
+        }
+
         // Look up user by mysqlId
         UUID userId = null;
         if (source.getSecUser() != null && source.getSecUser().getId() != null) {

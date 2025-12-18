@@ -38,6 +38,12 @@ public class UserPaymentProcessor implements Processor {
 
         log.info("Migrating user_payment id={}, transactionId={}", source.getId(), source.getTransactionId());
 
+        // Check if already exists
+        if (transactionRepository.existsByMysqlId(source.getId())) {
+            log.info("Skipping user_payment id={}, already exists", source.getId());
+            return;
+        }
+
         // Look up the user by mysqlId
         UUID userId = null;
         if (source.getSecUser() != null && source.getSecUser().getId() != null) {

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository("pgTipsCategoryRepository")
 public interface TipsCategoryRepository extends JpaRepository<TipsCategoryEntity, UUID> {
     java.util.Optional<TipsCategoryEntity> findByMysqlId(Long mysqlId);
+    boolean existsByMysqlId(Long mysqlId);
 }
 
 

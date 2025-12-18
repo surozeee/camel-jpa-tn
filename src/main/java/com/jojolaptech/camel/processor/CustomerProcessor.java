@@ -43,6 +43,12 @@ public class CustomerProcessor implements Processor {
 
         log.info("Migrating sec_user id={}, username={}", source.getId(), source.getUsername());
 
+        // Check if already exists
+        if (userRepository.existsByMysqlId(source.getId())) {
+            log.info("Skipping sec_user id={}, already exists", source.getId());
+            return;
+        }
+
         UserEntity user = new UserEntity();
         user.setMysqlId(source.getId());
         user.setUsername(source.getUsername());

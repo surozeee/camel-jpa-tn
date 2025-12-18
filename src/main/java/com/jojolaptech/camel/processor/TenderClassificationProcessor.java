@@ -25,6 +25,12 @@ public class TenderClassificationProcessor implements Processor {
 
         log.info("Migrating tender_classification id={}, name={} to district", source.getId(), source.getClassificationName());
 
+        // Check if already exists
+        if (districtRepository.existsByMysqlId(source.getId())) {
+            log.info("Skipping tender_classification id={}, already exists", source.getId());
+            return;
+        }
+
         DistrictEntity target = new DistrictEntity();
         target.setMysqlId(source.getId());
         target.setName(source.getClassificationName());
