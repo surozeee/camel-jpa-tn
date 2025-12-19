@@ -66,12 +66,13 @@ public class TagProcessor implements Processor {
 
         TagsEntity target = new TagsEntity();
         target.setMysqlId(source.getId());
+        target.setVersion(0L);
         target.setName(source.getName());
         target.setUserId(userId);
         target.setNoticeId(noticeId);
 
         TagsEntity saved = tagsRepository.save(target);
-        log.info("Saved tags to Postgres with id={}, name={}", saved.getId(), saved.getName());
+        log.info("Saved tags to Postgres with id={}, mysqlId={}, name={}", saved.getId(), saved.getMysqlId(), saved.getName());
     }
 }
 

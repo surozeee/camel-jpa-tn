@@ -8,6 +8,7 @@ import com.jojolaptech.camel.processor.NewsletterSubscriptionProcessor;
 import com.jojolaptech.camel.processor.NoticeProcessor;
 import com.jojolaptech.camel.processor.ProductServiceProcessor;
 import com.jojolaptech.camel.processor.TagProcessor;
+import com.jojolaptech.camel.processor.NoticeBookmarkProcessor;
 import com.jojolaptech.camel.processor.TenderClassificationProcessor;
 import com.jojolaptech.camel.processor.TipsCategoryProcessor;
 import com.jojolaptech.camel.processor.TipsProcessor;
@@ -20,6 +21,7 @@ import com.jojolaptech.camel.repository.mysql.NewsPaperRepository;
 import com.jojolaptech.camel.repository.mysql.NoticeRepository;
 import com.jojolaptech.camel.repository.mysql.ProductServiceRepository;
 import com.jojolaptech.camel.repository.mysql.TagRepository;
+import com.jojolaptech.camel.repository.mysql.UserNotesRepository;
 import com.jojolaptech.camel.repository.mysql.TenderClassificationRepository;
 import com.jojolaptech.camel.repository.mysql.TipsCategoryRepository;
 import com.jojolaptech.camel.repository.mysql.TipsRepository;
@@ -52,6 +54,7 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final IndustryProcessor industryProcessor;
     private final NoticeProcessor noticeProcessor;
     private final TagProcessor tagProcessor;
+    private final NoticeBookmarkProcessor noticeBookmarkProcessor;
     private final NewsletterSubscriptionProcessor newsletterSubscriptionProcessor;
     private final UniqueCodeProcessor uniqueCodeProcessor;
     private final UserPaymentProcessor userPaymentProcessor;
@@ -66,6 +69,7 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final IndustryRepository industryRepository;
     private final NoticeRepository noticeRepository;
     private final TagRepository tagRepository;
+    private final UserNotesRepository userNotesRepository;
     private final NewsletterSubscriptionRepository newsletterSubscriptionRepository;
     private final UniqueCodeTableRepository uniqueCodeTableRepository;
     private final UserPaymentRepository userPaymentRepository;
@@ -368,8 +372,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .endChoice()
                 .end();
 
-        // Route for tag migration
-        /*from("timer:tag-import?repeatCount=1&delay=7000")
+        // Route for tag migration to tags
+        from("timer:tag-import?repeatCount=1&delay=7000")
                 .routeId("tag-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -398,7 +402,39 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(tagProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
+
+        // Route for user_notes migration to notice_bookmark
+        from("timer:user-notes-import?repeatCount=1&delay=8000")
+                .routeId("user-notes-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                .process(exchange -> {
+                    int page = exchange.getProperty("page", Integer.class);
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
+
+                    var resultPage = userNotesRepository.findAllWithRelationships(pageable);
+
+                    exchange.getMessage().setBody(resultPage.getContent());
+                    exchange.setProperty("hasNext", resultPage.hasNext());
+                    exchange.setProperty("page", page + 1);
+
+                    log.info("Fetched user_notes page={}, size={}, returnedRows={}, hasNext={}",
+                            page, PAGE_SIZE, resultPage.getNumberOfElements(), resultPage.hasNext());
+                })
+                .choice()
+                .when(simple("${body.size} == 0"))
+                .log("No user_notes rows in this page, continuing...")
+                .otherwise()
+                .split(body()).streaming()
+                .log("Consuming user_notes mysqlId=${body.id}")
+                .process(noticeBookmarkProcessor)
+                .end()
+                .endChoice()
+                .end();
 
         // Route for newsletter subscription migration
         /*from("timer:newsletter-subscription-import?repeatCount=1&delay=15000")
