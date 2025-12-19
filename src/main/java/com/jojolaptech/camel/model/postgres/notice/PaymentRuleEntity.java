@@ -2,6 +2,7 @@ package com.jojolaptech.camel.model.postgres.notice;
 
 import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
 import com.jojolaptech.camel.model.postgres.enums.ValueTypeEnum;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -20,6 +21,9 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "payment_rule")
 public class PaymentRuleEntity extends BaseAuditEntity {
+
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
 
     private int periodInMonth;
     private BigDecimal totalPrice;

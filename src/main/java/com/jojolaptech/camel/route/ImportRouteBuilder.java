@@ -12,6 +12,7 @@ import com.jojolaptech.camel.processor.TenderClassificationProcessor;
 import com.jojolaptech.camel.processor.TipsCategoryProcessor;
 import com.jojolaptech.camel.processor.TipsProcessor;
 import com.jojolaptech.camel.processor.UniqueCodeProcessor;
+import com.jojolaptech.camel.processor.PayPlanProcessor;
 import com.jojolaptech.camel.processor.UserPaymentProcessor;
 import com.jojolaptech.camel.repository.mysql.IndustryRepository;
 import com.jojolaptech.camel.repository.mysql.NewsletterSubscriptionRepository;
@@ -23,6 +24,7 @@ import com.jojolaptech.camel.repository.mysql.TenderClassificationRepository;
 import com.jojolaptech.camel.repository.mysql.TipsCategoryRepository;
 import com.jojolaptech.camel.repository.mysql.TipsRepository;
 import com.jojolaptech.camel.repository.mysql.UniqueCodeTableRepository;
+import com.jojolaptech.camel.repository.mysql.PayPlanRepository;
 import com.jojolaptech.camel.repository.mysql.UserPaymentRepository;
 import com.jojolaptech.camel.repository.mysql.sec.SecUserRepository;
 import com.jojolaptech.camel.repository.mysql.tendersystem.CategoryRepository;
@@ -51,6 +53,7 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final NewsletterSubscriptionProcessor newsletterSubscriptionProcessor;
     private final UniqueCodeProcessor uniqueCodeProcessor;
     private final UserPaymentProcessor userPaymentProcessor;
+    private final PayPlanProcessor payPlanProcessor;
     private final SecUserRepository secUserRepository;
     private final CategoryRepository categoryRepository;
     private final ProductServiceRepository productServiceRepository;
@@ -64,6 +67,7 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final NewsletterSubscriptionRepository newsletterSubscriptionRepository;
     private final UniqueCodeTableRepository uniqueCodeTableRepository;
     private final UserPaymentRepository userPaymentRepository;
+    private final PayPlanRepository payPlanRepository;
 
     private static final int PAGE_SIZE = 500; // tune this
 
@@ -395,7 +399,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .end();*/
 
         // Route for newsletter subscription migration
-        from("timer:newsletter-subscription-import?repeatCount=1&delay=15000")
+        /*from("timer:newsletter-subscription-import?repeatCount=1&delay=15000")
                 .routeId("newsletter-subscription-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -424,7 +428,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(newsletterSubscriptionProcessor)
                 .end()
                 .endChoice()
-                .end();
+                .end();*/
 
         // Route for unique code migration
         /*from("timer:unique-code-import?repeatCount=1&delay=5000")
@@ -456,7 +460,39 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(uniqueCodeProcessor)
                 .end()
                 .endChoice()
-                .end();
+                .end();*/
+
+        // Route for pay_plan migration to payment_rule
+        /*from("timer:pay-plan-import?repeatCount=1&delay=8000")
+                .routeId("pay-plan-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                .process(exchange -> {
+                    int page = exchange.getProperty("page", Integer.class);
+                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
+                            org.springframework.data.domain.Sort.by("id").ascending());
+
+                    var resultPage = payPlanRepository.findAll(pageable);
+
+                    exchange.getMessage().setBody(resultPage.getContent());
+                    exchange.setProperty("hasNext", resultPage.hasNext());
+                    exchange.setProperty("page", page + 1);
+
+                    log.info("Fetched pay_plan page={}, size={}, returnedRows={}, hasNext={}",
+                            page, PAGE_SIZE, resultPage.getNumberOfElements(), resultPage.hasNext());
+                })
+                .choice()
+                .when(simple("${body.size} == 0"))
+                .log("No pay_plan rows in this page, continuing...")
+                .otherwise()
+                .split(body()).streaming()
+                .log("Consuming pay_plan mysqlId=${body.id}, period=${body.period}")
+                .process(payPlanProcessor)
+                .end()
+                .endChoice()
+                .end();*/
 
         // Route for user_payment migration
         from("timer:user-payment-import?repeatCount=1&delay=10000")
@@ -488,7 +524,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(userPaymentProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
     }
 }
 

@@ -76,20 +76,22 @@ public class UserPaymentProcessor implements Processor {
                     }
                 }
                 if (paymentMode == null) {
+                    paymentMode = PaymentModeEnum.BANK_DEPOSIT;
                     log.warn("Unknown payment mode: {}, setting to null", source.getPayType());
                 }
             }
             target.setPaymentMode(paymentMode);
         }
-        
-        // Map amount - prefer toPayAmount, fallback to netPayPlan
+        // Map amount - prefer toPayAmount, fallback to netPayPlan, always set (even if 0)
         if (source.getToPayAmount() != null) {
-            target.setAmount(BigDecimal.valueOf(source.getToPayAmount()));
-        } else if (source.getNetPayPlan() > 0) {
-            target.setAmount(BigDecimal.valueOf(source.getNetPayPlan()));
+            // Set amount even if toPayAmount is 0.0
+            target.setNetAmountPaid(BigDecimal.valueOf(source.getToPayAmount()));
+        } else {
+            // Use netPayPlan (which is a long, so it can be 0)
+            target.setNetAmountPaid(BigDecimal.valueOf(source.getNetPayPlan()));
         }
         
-        // Convert Instant to LocalDate
+        // Convert Instant to LocalDate for paymentDate
         if (source.getPayDate() != null) {
             LocalDate paymentDate = source.getPayDate()
                     .atZone(ZoneId.systemDefault())
@@ -97,6 +99,17 @@ public class UserPaymentProcessor implements Processor {
             target.setPaymentDate(paymentDate);
         }
         
+        // Convert Instant to LocalDate for expiryDate - always set if expireDate exists (even if it's a zero date converted to null)
+        if (source.getExpireDate() != null) {
+            LocalDate expiryDate = source.getExpireDate()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+            target.setExpiryDate(expiryDate);
+        } else {
+            // Explicitly set to null if not present
+            target.setExpiryDate(null);
+        }
+
         target.setNote(source.getPaymentNote());
         target.setReceipt(source.getVoucherChequeId());
         
@@ -118,6 +131,20 @@ public class UserPaymentProcessor implements Processor {
             }
         } else {
             target.setStatus(TransactionStatusEnum.VERIFICATION_PENDING);
+        }
+        
+        // Set approveRejectDate from verifyDate when status is Verify or Rejected - always set if verifyDate exists
+        if (source.getVerifyDate() != null && 
+            (source.getPaidStatus() == PaidStatus.Verify || 
+             source.getPaidStatus() == PaidStatus.Rejected || 
+             source.getPaidStatus() == PaidStatus.Deleted)) {
+            LocalDate approveRejectDate = source.getVerifyDate()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+            target.setApproveRejectDate(approveRejectDate);
+        } else {
+            // Explicitly set to null if not applicable
+            target.setApproveRejectDate(null);
         }
         
         target.setUserId(userId);

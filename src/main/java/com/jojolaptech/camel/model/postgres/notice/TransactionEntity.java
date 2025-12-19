@@ -1,13 +1,10 @@
 package com.jojolaptech.camel.model.postgres.notice;
 
 import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.enums.DiscountTypeEnum;
 import com.jojolaptech.camel.model.postgres.enums.PaymentModeEnum;
 import com.jojolaptech.camel.model.postgres.enums.TransactionStatusEnum;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,7 +31,11 @@ public class TransactionEntity extends BaseAuditEntity {
     @Column(name = "payment_method")
     private PaymentModeEnum paymentMode;
 
-    private BigDecimal amount;
+    private BigDecimal grossAmount;
+    private BigDecimal netAmountPaid;
+    @Enumerated(EnumType.STRING)
+    private DiscountTypeEnum discountType;
+    private BigDecimal discount;
     private LocalDate paymentDate;
     private String note;
     private UUID userId;
@@ -43,9 +44,9 @@ public class TransactionEntity extends BaseAuditEntity {
     @Enumerated(EnumType.STRING)
     private TransactionStatusEnum status;
 
-
     private UUID paymentRuleId;
 
     private String rejectReason;
-
+    private LocalDate expiryDate;
+    private LocalDate approveRejectDate;
 }

@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository("pgPaymentRuleRepository")
-public interface PaymentRuleRepository extends JpaRepository<PaymentRuleEntity, UUID> {}
+public interface PaymentRuleRepository extends JpaRepository<PaymentRuleEntity, UUID> {
+    boolean existsByMysqlId(Long mysqlId);
+}
 
 
