@@ -1,8 +1,8 @@
 package com.jojolaptech.camel.processor;
 
 import com.jojolaptech.camel.model.mysql.tendersystem.ProductService;
-import com.jojolaptech.camel.model.postgres.notice.NoticeCategoryEntity;
-import com.jojolaptech.camel.repository.postgres.notice.NoticeCategoryRepository;
+import com.jojolaptech.camel.model.postgres.notice.ProductServiceEntity;
+import com.jojolaptech.camel.repository.postgres.notice.ProductServiceRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.camel.Exchange;
 import org.apache.camel.InvalidPayloadException;
@@ -17,27 +17,28 @@ public class ProductServiceProcessor implements Processor {
 
     private static final Logger log = LoggerFactory.getLogger(ProductServiceProcessor.class);
 
-    private final NoticeCategoryRepository noticeCategoryRepository;
+    private final ProductServiceRepository productServiceRepository;
 
     @Override
     public void process(Exchange exchange) throws InvalidPayloadException {
         ProductService source = exchange.getMessage().getMandatoryBody(ProductService.class);
 
-        log.info("Migrating product_service id={}, name={} to notice_category", source.getId(), source.getName());
+        log.info("Migrating product_service id={}, name={}", source.getId(), source.getName());
 
-        // Check if already exists by name (don't check mysqlId as category uses same table with potentially same IDs)
-        if (noticeCategoryRepository.existsByName(source.getName())) {
-            log.info("Skipping product_service id={}, name={} already exists", source.getId(), source.getName());
+        // Check if already exists by mysqlId
+        if (productServiceRepository.existsByMysqlId(source.getId())) {
+            log.info("Skipping product_service id={}, already exists by mysqlId", source.getId());
             return;
         }
 
-        NoticeCategoryEntity target = new NoticeCategoryEntity();
-        // Don't set mysqlId for product_service to avoid conflicts with category IDs
+        ProductServiceEntity target = new ProductServiceEntity();
+        target.setMysqlId(source.getId());
         target.setName(source.getName());
+        target.setVersion(0L);
         // Status will be set to ACTIVE by @PrePersist
 
-        NoticeCategoryEntity saved = noticeCategoryRepository.save(target);
-        log.info("Saved notice_category to Postgres with id={}, name={}", saved.getId(), saved.getName());
+        ProductServiceEntity saved = productServiceRepository.save(target);
+        log.info("Saved product_service to Postgres with id={}, mysqlId={}, name={}", saved.getId(), saved.getMysqlId(), saved.getName());
     }
 }
 

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface ProductServiceRepository
         extends JpaRepository<ProductServiceEntity, UUID> {
     java.util.Optional<ProductServiceEntity> findByMysqlId(Long mysqlId);
+    boolean existsByMysqlId(Long mysqlId);
 }
 
 

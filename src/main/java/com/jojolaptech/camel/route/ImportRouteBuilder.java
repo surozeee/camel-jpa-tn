@@ -207,8 +207,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .endChoice()
                 .end();*/
 
-        // Route for product_service migration to notice_category
-        /*from("timer:product-service-import?repeatCount=1&delay=2500")
+        // Route for product_service migration to product_service
+        from("timer:product-service-import?repeatCount=1&delay=2500")
                 .routeId("product-service-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -237,7 +237,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(productServiceProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
 
         // Route for tender_classification migration to district
         /*from("timer:tender-classification-import?repeatCount=1&delay=2800")

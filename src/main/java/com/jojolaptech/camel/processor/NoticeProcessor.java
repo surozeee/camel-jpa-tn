@@ -44,22 +44,58 @@ public class NoticeProcessor implements Processor {
             return;
         }
 
-        // Look up related entities by mysqlId
+        // Look up related entities by mysqlId and get their UUIDs
+        
+        // sourceId -> NewsPaperEntity with mysqlId
+        UUID sourceId = null;
+        if (source.getNewsPaper() != null && source.getNewsPaper().getId() != null) {
+            Optional<NewsPaperEntity> newsPaperOpt = newsPaperRepository.findByMysqlId(source.getNewsPaper().getId());
+            if (newsPaperOpt.isPresent()) {
+                sourceId = newsPaperOpt.get().getId();
+                log.debug("Found NewsPaper mysqlId={}, postgresId={}", source.getNewsPaper().getId(), sourceId);
+            } else {
+                log.error("NewsPaper not found in Postgres for mysqlId={}. Notice id={} cannot be migrated without sourceId.", 
+                        source.getNewsPaper().getId(), source.getId());
+                return;
+            }
+        } else {
+            log.error("No newsPaper for notice id={}. Notice cannot be migrated without sourceId.", source.getId());
+            return;
+        }
+
+        // districtId -> DistrictEntity with mysqlId
+        UUID districtId = null;
+        if (source.getTenderClassification() != null && source.getTenderClassification().getId() != null) {
+            Optional<DistrictEntity> districtOpt = districtRepository.findByMysqlId(source.getTenderClassification().getId());
+            if (districtOpt.isPresent()) {
+                districtId = districtOpt.get().getId();
+                log.debug("Found District mysqlId={}, postgresId={}", source.getTenderClassification().getId(), districtId);
+            } else {
+                log.warn("District (tenderClassification) not found in Postgres for mysqlId={}", source.getTenderClassification().getId());
+            }
+        } else {
+            log.warn("Notice id={} has no TenderClassification relationship", source.getId());
+        }
+
+        // categoryId -> NoticeCategoryEntity with mysqlId
         UUID categoryId = null;
         if (source.getCategory() != null && source.getCategory().getId() != null) {
             Optional<NoticeCategoryEntity> categoryOpt = noticeCategoryRepository.findByMysqlId(source.getCategory().getId());
             if (categoryOpt.isPresent()) {
                 categoryId = categoryOpt.get().getId();
+                log.debug("Found NoticeCategory mysqlId={}, postgresId={}", source.getCategory().getId(), categoryId);
             } else {
                 log.warn("Category not found in Postgres for mysqlId={}", source.getCategory().getId());
             }
         }
 
+        // industryId -> IndustryEntity with mysqlId
         UUID industryId = null;
         if (source.getIndustry() != null && source.getIndustry().getId() != null) {
             Optional<IndustryEntity> industryOpt = industryRepository.findByMysqlId(source.getIndustry().getId());
             if (industryOpt.isPresent()) {
                 industryId = industryOpt.get().getId();
+                log.debug("Found Industry mysqlId={}, postgresId={}", source.getIndustry().getId(), industryId);
             } else {
                 log.warn("Industry not found in Postgres for mysqlId={}", source.getIndustry().getId());
             }
@@ -67,43 +103,18 @@ public class NoticeProcessor implements Processor {
             log.warn("Notice id={} has no Industry relationship", source.getId());
         }
 
+        // productServiceId -> ProductServiceEntity with mysqlId
         UUID productServiceId = null;
         if (source.getProductService() != null && source.getProductService().getId() != null) {
             Optional<ProductServiceEntity> productServiceOpt = productServiceRepository.findByMysqlId(source.getProductService().getId());
             if (productServiceOpt.isPresent()) {
                 productServiceId = productServiceOpt.get().getId();
+                log.debug("Found ProductService mysqlId={}, postgresId={}", source.getProductService().getId(), productServiceId);
             } else {
                 log.warn("ProductService not found in Postgres for mysqlId={}", source.getProductService().getId());
             }
         } else {
             log.warn("Notice id={} has no ProductService relationship", source.getId());
-        }
-
-        UUID districtId = null;
-        if (source.getTenderClassification() != null && source.getTenderClassification().getId() != null) {
-            Optional<DistrictEntity> districtOpt = districtRepository.findByMysqlId(source.getTenderClassification().getId());
-            if (districtOpt.isPresent()) {
-                districtId = districtOpt.get().getId();
-            } else {
-                log.warn("District (tenderClassification) not found in Postgres for mysqlId={}", source.getTenderClassification().getId());
-            }
-        }
-
-        UUID sourceId = null;
-        if (source.getNewsPaper() != null && source.getNewsPaper().getId() != null) {
-            Optional<NewsPaperEntity> newsPaperOpt = newsPaperRepository.findByMysqlId(source.getNewsPaper().getId());
-            if (newsPaperOpt.isPresent()) {
-                sourceId = newsPaperOpt.get().getId();
-            } else {
-                log.error("NewsPaper not found in Postgres for mysqlId={}. Notice id={} cannot be migrated without sourceId.", 
-                        source.getNewsPaper().getId(), source.getId());
-                // Skip this notice as sourceId is required
-                return;
-            }
-        } else {
-            log.error("No newsPaper for notice id={}. Notice cannot be migrated without sourceId.", source.getId());
-            // Skip this notice as sourceId is required
-            return;
         }
 
         // Validate required fields - skip if any required field is missing
@@ -114,6 +125,9 @@ public class NoticeProcessor implements Processor {
         }
         
         // Log warnings for optional fields that are missing
+        if (districtId == null) {
+            log.warn("Notice id={} has no District (TenderClassification) relationship - will be saved with null districtId", source.getId());
+        }
         if (industryId == null) {
             log.warn("Notice id={} has no Industry relationship - will be saved with null industryId", source.getId());
         }
@@ -123,11 +137,15 @@ public class NoticeProcessor implements Processor {
 
         TenderNoticeEntity target = new TenderNoticeEntity();
         target.setMysqlId(source.getId());
-        target.setSourceId(sourceId);
-        target.setDistrictId(districtId);
-        target.setCategoryId(categoryId);
-        target.setIndustryId(industryId);
-        target.setProductServiceId(productServiceId);
+        target.setVersion(0L);
+        
+        // Set foreign key UUIDs from mysqlId lookups
+        target.setSourceId(sourceId);           // NewsPaperEntity UUID from mysqlId lookup
+        target.setDistrictId(districtId);       // DistrictEntity UUID from mysqlId lookup
+        target.setCategoryId(categoryId);       // NoticeCategoryEntity UUID from mysqlId lookup
+        target.setIndustryId(industryId);       // IndustryEntity UUID from mysqlId lookup
+        target.setProductServiceId(productServiceId); // ProductServiceEntity UUID from mysqlId lookup
+        
         target.setNoticeProvider(source.getNoticeProvider());
         target.setDescription(source.getDescription());
         
