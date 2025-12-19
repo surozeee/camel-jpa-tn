@@ -175,14 +175,16 @@ public class NoticeProcessor implements Processor {
             target.setEmailTime(emailTime);
         }
         
-        // Map linked notice
+        // Map parentNotice -> TenderNoticeEntity with mysqlId
         if (source.getLinkedNotice() != null && source.getLinkedNotice().getId() != null) {
             Optional<TenderNoticeEntity> parentNoticeOpt = tenderNoticeRepository.findByMysqlId(source.getLinkedNotice().getId());
             if (parentNoticeOpt.isPresent()) {
-                target.setParentNotice(parentNoticeOpt.get());
+                TenderNoticeEntity parentNotice = parentNoticeOpt.get();
+                target.setParentNotice(parentNotice);
                 target.setLinkedNotice(true);
+                log.debug("Found parent notice mysqlId={}, postgresId={}", source.getLinkedNotice().getId(), parentNotice.getId());
             } else {
-                log.warn("Linked notice not found in Postgres for mysqlId={}, will set linkedNotice flag but no parent", source.getLinkedNotice().getId());
+                log.warn("Parent notice not found in Postgres for mysqlId={}, will set linkedNotice flag but no parent", source.getLinkedNotice().getId());
                 target.setLinkedNotice(true);
             }
         } else {
