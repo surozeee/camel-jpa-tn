@@ -32,6 +32,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.camel.builder.RouteBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -86,8 +88,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                 .process(exchange -> {
                     int page = exchange.getProperty("page", Integer.class);
-                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
-                            org.springframework.data.domain.Sort.by("id").ascending());
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
 
                     var resultPage = secUserRepository.findAll(pageable);
 
@@ -118,8 +120,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                 .process(exchange -> {
                     int page = exchange.getProperty("page", Integer.class);
-                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
-                            org.springframework.data.domain.Sort.by("id").ascending());
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
 
                     var resultPage = categoryRepository.findAll(pageable);
 
@@ -150,8 +152,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                 .process(exchange -> {
                     int page = exchange.getProperty("page", Integer.class);
-                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
-                            org.springframework.data.domain.Sort.by("id").ascending());
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
 
                     var resultPage = tipsCategoryRepository.findAll(pageable);
 
@@ -182,8 +184,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                 .process(exchange -> {
                     int page = exchange.getProperty("page", Integer.class);
-                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
-                            org.springframework.data.domain.Sort.by("id").ascending());
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
 
                     var resultPage = tipsRepository.findAll(pageable);
 
@@ -214,8 +216,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                 .process(exchange -> {
                     int page = exchange.getProperty("page", Integer.class);
-                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
-                            org.springframework.data.domain.Sort.by("id").ascending());
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
 
                     var resultPage = productServiceRepository.findAll(pageable);
 
@@ -246,8 +248,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                 .process(exchange -> {
                     int page = exchange.getProperty("page", Integer.class);
-                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
-                            org.springframework.data.domain.Sort.by("id").ascending());
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
 
                     var resultPage = tenderClassificationRepository.findAll(pageable);
 
@@ -278,8 +280,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                 .process(exchange -> {
                     int page = exchange.getProperty("page", Integer.class);
-                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
-                            org.springframework.data.domain.Sort.by("id").ascending());
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
 
                     var resultPage = newsPaperRepository.findAll(pageable);
 
@@ -310,8 +312,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                 .process(exchange -> {
                     int page = exchange.getProperty("page", Integer.class);
-                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
-                            org.springframework.data.domain.Sort.by("id").ascending());
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
 
                     var resultPage = industryRepository.findAll(pageable);
 
@@ -335,7 +337,7 @@ public class ImportRouteBuilder extends RouteBuilder {
 
         //TODO update and fix
         // Route for notice migration to tender_notice
-        /*from("timer:notice-import?repeatCount=1&delay=6000")
+        from("timer:notice-import?repeatCount=1&delay=6000")
                 .routeId("notice-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -343,8 +345,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                 .process(exchange -> {
                     int page = exchange.getProperty("page", Integer.class);
-                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
-                            org.springframework.data.domain.Sort.by("id").ascending());
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
 
                     var resultPage = noticeRepository.findAll(pageable);
 
@@ -375,8 +377,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                 .process(exchange -> {
                     int page = exchange.getProperty("page", Integer.class);
-                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
-                            org.springframework.data.domain.Sort.by("id").ascending());
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
 
                     var resultPage = tagRepository.findAll(pageable);
 
@@ -407,8 +409,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                 .process(exchange -> {
                     int page = exchange.getProperty("page", Integer.class);
-                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
-                            org.springframework.data.domain.Sort.by("id").ascending());
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
 
                     var resultPage = newsletterSubscriptionRepository.findAll(pageable);
 
@@ -439,8 +441,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                 .process(exchange -> {
                     int page = exchange.getProperty("page", Integer.class);
-                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
-                            org.springframework.data.domain.Sort.by("id").ascending());
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
 
                     var resultPage = uniqueCodeTableRepository.findAll(pageable);
 
@@ -471,8 +473,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                 .process(exchange -> {
                     int page = exchange.getProperty("page", Integer.class);
-                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
-                            org.springframework.data.domain.Sort.by("id").ascending());
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
 
                     var resultPage = payPlanRepository.findAll(pageable);
 
@@ -495,7 +497,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .end();*/
 
         // Route for user_payment migration
-        from("timer:user-payment-import?repeatCount=1&delay=10000")
+        /*from("timer:user-payment-import?repeatCount=1&delay=10000")
                 .routeId("user-payment-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -503,8 +505,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
                 .process(exchange -> {
                     int page = exchange.getProperty("page", Integer.class);
-                    var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
-                            org.springframework.data.domain.Sort.by("id").ascending());
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
 
                     var resultPage = userPaymentRepository.findAllWithPayPlan(pageable);
 
@@ -524,7 +526,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(userPaymentProcessor)
                 .end()
                 .endChoice()
-                .end();
+                .end();*/
     }
 }
 
