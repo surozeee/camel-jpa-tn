@@ -63,6 +63,8 @@ public class NoticeProcessor implements Processor {
             } else {
                 log.warn("Industry not found in Postgres for mysqlId={}", source.getIndustry().getId());
             }
+        } else {
+            log.warn("Notice id={} has no Industry relationship", source.getId());
         }
 
         UUID productServiceId = null;
@@ -73,6 +75,8 @@ public class NoticeProcessor implements Processor {
             } else {
                 log.warn("ProductService not found in Postgres for mysqlId={}", source.getProductService().getId());
             }
+        } else {
+            log.warn("Notice id={} has no ProductService relationship", source.getId());
         }
 
         UUID districtId = null;
@@ -91,20 +95,30 @@ public class NoticeProcessor implements Processor {
             if (newsPaperOpt.isPresent()) {
                 sourceId = newsPaperOpt.get().getId();
             } else {
-                log.warn("NewsPaper not found in Postgres for mysqlId={}, using notice ID as sourceId", source.getNewsPaper().getId());
-                // Use a default UUID if newsPaper not found - this might need adjustment
-                sourceId = UUID.randomUUID();
+                log.error("NewsPaper not found in Postgres for mysqlId={}. Notice id={} cannot be migrated without sourceId.", 
+                        source.getNewsPaper().getId(), source.getId());
+                // Skip this notice as sourceId is required
+                return;
             }
         } else {
-            // Generate a default sourceId if newsPaper is null
-            sourceId = UUID.randomUUID();
-            log.warn("No newsPaper for notice id={}, using generated UUID as sourceId", source.getId());
+            log.error("No newsPaper for notice id={}. Notice cannot be migrated without sourceId.", source.getId());
+            // Skip this notice as sourceId is required
+            return;
         }
 
-        // Validate required fields
-        if (categoryId == null || industryId == null || productServiceId == null || sourceId == null) {
-            log.error("Missing required relationships for notice id={}. Skipping migration.", source.getId());
+        // Validate required fields - skip if any required field is missing
+        if (categoryId == null || sourceId == null) {
+            log.error("Missing required relationships for notice id={}. categoryId={}, sourceId={}. Skipping migration.", 
+                    source.getId(), categoryId, sourceId);
             return;
+        }
+        
+        // Log warnings for optional fields that are missing
+        if (industryId == null) {
+            log.warn("Notice id={} has no Industry relationship - will be saved with null industryId", source.getId());
+        }
+        if (productServiceId == null) {
+            log.warn("Notice id={} has no ProductService relationship - will be saved with null productServiceId", source.getId());
         }
 
         TenderNoticeEntity target = new TenderNoticeEntity();

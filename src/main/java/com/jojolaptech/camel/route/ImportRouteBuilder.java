@@ -348,7 +348,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                     var pageable = PageRequest.of(page, PAGE_SIZE,
                             Sort.by("id").ascending());
 
-                    var resultPage = noticeRepository.findAll(pageable);
+                    var resultPage = noticeRepository.findAllWithRelationships(pageable);
 
                     exchange.getMessage().setBody(resultPage.getContent());
                     exchange.setProperty("hasNext", resultPage.hasNext());

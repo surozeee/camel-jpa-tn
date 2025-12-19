@@ -59,7 +59,7 @@ public class Notice {
     private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "newspaper_id")
+    @JoinColumn(name = "news_paper_id")
     private NewsPaper newsPaper;
 
     @ManyToOne(fetch = FetchType.LAZY)

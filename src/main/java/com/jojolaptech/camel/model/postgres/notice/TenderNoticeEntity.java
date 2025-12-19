@@ -34,20 +34,23 @@ public class TenderNoticeEntity extends BaseAuditEntity {
     @Column(nullable = false)
     private UUID categoryId;
 
-    @Column(nullable = false)
     private UUID industryId;
 
-    @Column(nullable = false)
     private UUID productServiceId;
 
-    @Column(columnDefinition = "TEXT")
     private String noticeProvider;
+    @Column(columnDefinition = "TEXT")
     private String description;
+
     private LocalDateTime publishDate;
     private Integer submitUptoDays;
     private LocalDateTime submitDate;
+
+    @Column(columnDefinition = "TEXT")
     private String remarks;
+
     private String noticeImage;
+
     private String document;
     private LocalDateTime emailTime;
 
