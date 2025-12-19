@@ -2,11 +2,16 @@ package com.jojolaptech.camel.processor;
 
 import com.jojolaptech.camel.model.mysql.enums.PaidStatus;
 import com.jojolaptech.camel.model.mysql.tendersystem.UserPayment;
+import com.jojolaptech.camel.model.postgres.enums.DiscountTypeEnum;
 import com.jojolaptech.camel.model.postgres.enums.PaymentModeEnum;
 import com.jojolaptech.camel.model.postgres.enums.TransactionStatusEnum;
 import com.jojolaptech.camel.model.postgres.iam.UserEntity;
+import com.jojolaptech.camel.model.mysql.tendersystem.PayPlan;
+import com.jojolaptech.camel.model.postgres.notice.PaymentRuleEntity;
 import com.jojolaptech.camel.model.postgres.notice.TransactionEntity;
+import com.jojolaptech.camel.repository.mysql.PayPlanRepository;
 import com.jojolaptech.camel.repository.postgres.iam.UserRepository;
+import com.jojolaptech.camel.repository.postgres.notice.PaymentRuleRepository;
 import com.jojolaptech.camel.repository.postgres.notice.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.camel.Exchange;
@@ -31,6 +36,8 @@ public class UserPaymentProcessor implements Processor {
 
     private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
+    private final PaymentRuleRepository paymentRuleRepository;
+    private final PayPlanRepository payPlanRepository;
 
     @Override
     public void process(Exchange exchange) throws InvalidPayloadException {
@@ -57,41 +64,111 @@ public class UserPaymentProcessor implements Processor {
             }
         }
 
+        // Get PayPlan - should be eagerly loaded via JOIN FETCH, but fetch separately as fallback
+        PayPlan payPlan = null;
+        Long payPlanId = null;
+        
+        try {
+            // Try to access PayPlan directly (should work if eagerly loaded)
+            if (source.getPayPlan() != null) {
+                payPlan = source.getPayPlan();
+                payPlanId = payPlan.getId();
+            }
+        } catch (org.hibernate.LazyInitializationException e) {
+            // If lazy loading exception, fetch separately
+            log.debug("PayPlan not eagerly loaded, fetching separately");
+            // Try to get ID from the proxy if possible
+            try {
+                payPlanId = source.getPayPlan().getId();
+            } catch (Exception ex) {
+                log.warn("Could not access PayPlan ID, skipping PayPlan-related mappings");
+            }
+        }
+        
+        // Fetch PayPlan separately if not already loaded
+        if (payPlan == null && payPlanId != null) {
+            Optional<PayPlan> payPlanOpt = payPlanRepository.findById(payPlanId);
+            if (payPlanOpt.isPresent()) {
+                payPlan = payPlanOpt.get();
+            }
+        }
+        
+        // Look up the payment rule by PayPlan mysqlId
+        UUID paymentRuleId = null;
+        if (payPlanId != null) {
+            Optional<PaymentRuleEntity> paymentRuleOpt = paymentRuleRepository.findByMysqlId(payPlanId);
+            
+            if (paymentRuleOpt.isPresent()) {
+                paymentRuleId = paymentRuleOpt.get().getId();
+                log.debug("Found payment rule with PayPlan mysqlId={}, postgresId={}", payPlanId, paymentRuleId);
+            } else {
+                log.warn("Payment rule not found in Postgres for PayPlan mysqlId={}", payPlanId);
+            }
+        }
+
         TransactionEntity target = new TransactionEntity();
         target.setMysqlId(source.getId());
         target.setReferenceNumber(source.getTransactionId());
         
         // Map payType string to PaymentModeEnum
         if (source.getPayType() != null && !source.getPayType().trim().isEmpty()) {
-            String payTypeUpper = source.getPayType().toUpperCase().trim();
+            String payTypeTrimmed = source.getPayType().trim();
             PaymentModeEnum paymentMode = null;
-            try {
-                paymentMode = PaymentModeEnum.valueOf(payTypeUpper);
-            } catch (IllegalArgumentException e) {
-                // Try to find by key
-                for (PaymentModeEnum mode : PaymentModeEnum.values()) {
-                    if (mode.getKey().equalsIgnoreCase(payTypeUpper)) {
-                        paymentMode = mode;
-                        break;
+            
+            // Special case: 't' or 'T' means TRIAL
+            if (payTypeTrimmed.equalsIgnoreCase("t")) {
+                paymentMode = PaymentModeEnum.TRIAL;
+            } else {
+                String payTypeUpper = payTypeTrimmed.toUpperCase();
+                try {
+                    paymentMode = PaymentModeEnum.valueOf(payTypeUpper);
+                } catch (IllegalArgumentException e) {
+                    // Try to find by key
+                    for (PaymentModeEnum mode : PaymentModeEnum.values()) {
+                        if (mode.getKey().equalsIgnoreCase(payTypeUpper)) {
+                            paymentMode = mode;
+                            break;
+                        }
                     }
-                }
-                if (paymentMode == null) {
-                    paymentMode = PaymentModeEnum.BANK_DEPOSIT;
-                    log.warn("Unknown payment mode: {}, setting to null", source.getPayType());
+                    if (paymentMode == null) {
+                        paymentMode = PaymentModeEnum.BANK_DEPOSIT;
+                        log.warn("Unknown payment mode: {}, setting to BANK_DEPOSIT", source.getPayType());
+                    }
                 }
             }
             target.setPaymentMode(paymentMode);
         }
-        // Map amount - prefer toPayAmount, fallback to netPayPlan, always set (even if 0)
+        
+        // Map grossAmount - use PayPlan.money (original price before discount)
+        if (payPlan != null && payPlan.getMoney() > 0) {
+            target.setGrossAmount(BigDecimal.valueOf(payPlan.getMoney()));
+        } else if (source.getNetPayPlan() > 0) {
+            // If PayPlan is not available, use netPayPlan as grossAmount (fallback)
+            target.setGrossAmount(BigDecimal.valueOf(source.getNetPayPlan()));
+        } else {
+            target.setGrossAmount(BigDecimal.ZERO);
+        }
+        
+        // Map discount - prefer discountPercent from UserPayment, fallback to PayPlan.discount
+        if (source.getDiscountPercent() != null && source.getDiscountPercent() > 0) {
+            target.setDiscount(BigDecimal.valueOf(source.getDiscountPercent()));
+            target.setDiscountType(DiscountTypeEnum.PERCENT);
+        } else if (payPlan != null && payPlan.getDiscount() > 0) {
+            target.setDiscount(BigDecimal.valueOf(payPlan.getDiscount()));
+            target.setDiscountType(DiscountTypeEnum.PERCENT);
+        } else {
+            target.setDiscount(BigDecimal.ZERO);
+            target.setDiscountType(DiscountTypeEnum.FLAT);
+        }
+        
+        // Map paidAmount (netAmountPaid) - prefer toPayAmount, fallback to netPayPlan
         if (source.getToPayAmount() != null) {
-            // Set amount even if toPayAmount is 0.0
             target.setNetAmountPaid(BigDecimal.valueOf(source.getToPayAmount()));
         } else {
-            // Use netPayPlan (which is a long, so it can be 0)
             target.setNetAmountPaid(BigDecimal.valueOf(source.getNetPayPlan()));
         }
         
-        // Convert Instant to LocalDate for paymentDate
+        // Convert Instant to LocalDate for paidDate (paymentDate)
         if (source.getPayDate() != null) {
             LocalDate paymentDate = source.getPayDate()
                     .atZone(ZoneId.systemDefault())
@@ -99,7 +176,7 @@ public class UserPaymentProcessor implements Processor {
             target.setPaymentDate(paymentDate);
         }
         
-        // Convert Instant to LocalDate for expiryDate - always set if expireDate exists (even if it's a zero date converted to null)
+        // Convert Instant to LocalDate for expiryDate
         if (source.getExpireDate() != null) {
             LocalDate expiryDate = source.getExpireDate()
                     .atZone(ZoneId.systemDefault())
@@ -133,7 +210,7 @@ public class UserPaymentProcessor implements Processor {
             target.setStatus(TransactionStatusEnum.VERIFICATION_PENDING);
         }
         
-        // Set approveRejectDate from verifyDate when status is Verify or Rejected - always set if verifyDate exists
+        // Set approveDate (approveRejectDate) from verifyDate when status is Verify or Rejected
         if (source.getVerifyDate() != null && 
             (source.getPaidStatus() == PaidStatus.Verify || 
              source.getPaidStatus() == PaidStatus.Rejected || 
@@ -148,6 +225,7 @@ public class UserPaymentProcessor implements Processor {
         }
         
         target.setUserId(userId);
+        target.setPaymentRuleId(paymentRuleId);
         
         // Set reject reason if status is rejected
         if (target.getStatus() == TransactionStatusEnum.REJECTED && source.getPaidStatus() == PaidStatus.Rejected) {

@@ -11,7 +11,8 @@ public enum PaymentModeEnum {
     ESEWA("ESEWA"),
     KHALTI("KHALTI"),
     CONNECT_IPS("CONNECT_IPS"),
-    CASH("CASH");
+    CASH("CASH"),
+    TRIAL("TRIAL");
 
     private final String key;
 

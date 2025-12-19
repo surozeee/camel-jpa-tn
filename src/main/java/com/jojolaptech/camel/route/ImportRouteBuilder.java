@@ -69,7 +69,7 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final UserPaymentRepository userPaymentRepository;
     private final PayPlanRepository payPlanRepository;
 
-    private static final int PAGE_SIZE = 500; // tune this
+    private static final int PAGE_SIZE = 5; // tune this
 
     @Override
     public void configure() {
@@ -506,7 +506,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                     var pageable = org.springframework.data.domain.PageRequest.of(page, PAGE_SIZE,
                             org.springframework.data.domain.Sort.by("id").ascending());
 
-                    var resultPage = userPaymentRepository.findAll(pageable);
+                    var resultPage = userPaymentRepository.findAllWithPayPlan(pageable);
 
                     exchange.getMessage().setBody(resultPage.getContent());
                     exchange.setProperty("hasNext", resultPage.hasNext());

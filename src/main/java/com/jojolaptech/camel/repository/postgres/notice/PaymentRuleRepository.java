@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository("pgPaymentRuleRepository")
 public interface PaymentRuleRepository extends JpaRepository<PaymentRuleEntity, UUID> {
     boolean existsByMysqlId(Long mysqlId);
+    java.util.Optional<PaymentRuleEntity> findByMysqlId(Long mysqlId);
 }
 
 
