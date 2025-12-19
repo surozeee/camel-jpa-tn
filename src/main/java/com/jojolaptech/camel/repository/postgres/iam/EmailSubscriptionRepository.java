@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository("pgEmailSubscriptionRepository")
 public interface EmailSubscriptionRepository
-        extends JpaRepository<EmailSubscriptionEntity, UUID> {}
+        extends JpaRepository<EmailSubscriptionEntity, UUID> {
+    boolean existsByMysqlId(Long mysqlId);
+}
 
 

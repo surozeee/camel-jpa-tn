@@ -266,7 +266,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .end();*/
 
         // Route for newspaper migration
-        from("timer:newspaper-import?repeatCount=1&delay=3000")
+        /*from("timer:newspaper-import?repeatCount=1&delay=3000")
                 .routeId("newspaper-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -295,7 +295,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(newsPaperProcessor)
                 .end()
                 .endChoice()
-                .end();
+                .end();*/
 
         // Route for industry migration
         /*from("timer:industry-import?repeatCount=1&delay=4000")
@@ -329,6 +329,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .endChoice()
                 .end();*/
 
+        //TODO update and fix
         // Route for notice migration to tender_notice
         /*from("timer:notice-import?repeatCount=1&delay=6000")
                 .routeId("notice-migration")
@@ -362,7 +363,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .end();
 
         // Route for tag migration
-        from("timer:tag-import?repeatCount=1&delay=7000")
+        /*from("timer:tag-import?repeatCount=1&delay=7000")
                 .routeId("tag-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -391,7 +392,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(tagProcessor)
                 .end()
                 .endChoice()
-                .end();
+                .end();*/
 
         // Route for newsletter subscription migration
         from("timer:newsletter-subscription-import?repeatCount=1&delay=15000")
@@ -426,7 +427,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .end();
 
         // Route for unique code migration
-        from("timer:unique-code-import?repeatCount=1&delay=5000")
+        /*from("timer:unique-code-import?repeatCount=1&delay=5000")
                 .routeId("unique-code-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)

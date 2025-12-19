@@ -36,6 +36,12 @@ public class NewsletterSubscriptionProcessor implements Processor {
 
         log.info("Migrating newsletter_subscription id={}, email={}", source.getId(), source.getEmailAddress());
 
+        // Check if already exists
+        if (emailSubscriptionRepository.existsByMysqlId(source.getId())) {
+            log.info("Skipping newsletter_subscription id={}, already exists", source.getId());
+            return;
+        }
+
         // Find user by email address (username in UserEntity or emailAddress in UserInfoEntity)
         UserInfoEntity userInfo = null;
         
