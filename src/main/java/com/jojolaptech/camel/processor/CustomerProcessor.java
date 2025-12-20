@@ -63,7 +63,7 @@ public class CustomerProcessor implements Processor {
 
 
         UserInformations userInformations = userInformationsRepository.findFirstBySecUser(source);
-        
+
         // Only create UserInfoEntity if userInformations exists
         if (userInformations != null) {
             UserInfoEntity userInfoEntity = mapUserInfo(user, userInformations);
@@ -76,16 +76,19 @@ public class CustomerProcessor implements Processor {
                     )
                             : null
             );
+            user.setCreatedAt(userInformations.getRegistrationDate() == null ? LocalDateTime.now() : LocalDateTime.ofInstant(
+                    userInformations.getRegistrationDate(),
+                    ZoneId.systemDefault()));
             user.setUserInfo(userInfoEntity);
         } else {
             log.warn("No UserInformations found for sec_user id={}, skipping user info mapping", source.getId());
         }
-
         userRepository.save(user);
     }
 
     private UserInfoEntity mapUserInfo(UserEntity savedUser, UserInformations info) {
         UserInfoEntity targetInfo = new UserInfoEntity();
+        targetInfo.setCreatedAt(info.getRegistrationDate() == null ? LocalDateTime.now() : LocalDateTime.ofInstant(info.getRegistrationDate(), ZoneId.systemDefault()));
         targetInfo.setUser(savedUser);
         targetInfo.setName(info.getName());
         targetInfo.setAddress(info.getAddress());

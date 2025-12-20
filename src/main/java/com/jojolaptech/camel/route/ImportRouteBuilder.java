@@ -84,7 +84,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .maximumRedeliveries(3)
                 .redeliveryDelay(2000));
 
-        /*from("timer:mysql-import?repeatCount=1&delay=0")
+        from("timer:mysql-import?repeatCount=1&delay=0")
                 .routeId("mysql-to-postgres-import")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -113,7 +113,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(customerProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
 
         // Route for category migration
         /*from("timer:category-import?repeatCount=1&delay=2000")
@@ -212,7 +212,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .end();*/
 
         // Route for product_service migration to product_service
-        from("timer:product-service-import?repeatCount=1&delay=2500")
+        /*from("timer:product-service-import?repeatCount=1&delay=2500")
                 .routeId("product-service-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -241,7 +241,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(productServiceProcessor)
                 .end()
                 .endChoice()
-                .end();
+                .end();*/
 
         // Route for tender_classification migration to district
         /*from("timer:tender-classification-import?repeatCount=1&delay=2800")
@@ -341,7 +341,7 @@ public class ImportRouteBuilder extends RouteBuilder {
 
         //TODO update and fix
         // Route for notice migration to tender_notice
-        from("timer:notice-import?repeatCount=1&delay=6000")
+        /*from("timer:notice-import?repeatCount=1&delay=6000")
                 .routeId("notice-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -352,7 +352,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                     var pageable = PageRequest.of(page, PAGE_SIZE,
                             Sort.by("id").ascending());
 
-                    var resultPage = noticeRepository.findAllWithRelationships(pageable);
+                    var resultPage = noticeRepository.findAllByIdGreaterThan(pageable, 0);
 
                     exchange.getMessage().setBody(resultPage.getContent());
                     exchange.setProperty("hasNext", resultPage.hasNext());
@@ -370,10 +370,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(noticeProcessor)
                 .end()
                 .endChoice()
-                .end();
+                .end();*/
 
         // Route for tag migration to tags
-        from("timer:tag-import?repeatCount=1&delay=7000")
+        /*from("timer:tag-import?repeatCount=1&delay=7000")
                 .routeId("tag-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -402,10 +402,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(tagProcessor)
                 .end()
                 .endChoice()
-                .end();
+                .end();*/
 
         // Route for user_notes migration to notice_bookmark
-        from("timer:user-notes-import?repeatCount=1&delay=8000")
+        /*from("timer:user-notes-import?repeatCount=1&delay=8000")
                 .routeId("user-notes-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -434,7 +434,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(noticeBookmarkProcessor)
                 .end()
                 .endChoice()
-                .end();
+                .end();*/
 
         // Route for newsletter subscription migration
         /*from("timer:newsletter-subscription-import?repeatCount=1&delay=15000")

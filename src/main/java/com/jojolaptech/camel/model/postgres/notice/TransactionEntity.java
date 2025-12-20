@@ -1,6 +1,7 @@
 package com.jojolaptech.camel.model.postgres.notice;
 
 import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.BaseEntity;
 import com.jojolaptech.camel.model.postgres.enums.DiscountTypeEnum;
 import com.jojolaptech.camel.model.postgres.enums.PaymentModeEnum;
 import com.jojolaptech.camel.model.postgres.enums.TransactionStatusEnum;
@@ -20,7 +21,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "transaction")
-public class TransactionEntity extends BaseAuditEntity {
+public class TransactionEntity extends BaseEntity {
 
     @Column(name = "mysql_id", unique = true)
     private Long mysqlId;

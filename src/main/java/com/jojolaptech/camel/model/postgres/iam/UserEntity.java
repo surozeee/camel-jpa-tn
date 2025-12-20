@@ -1,6 +1,7 @@
 package com.jojolaptech.camel.model.postgres.iam;
 
 import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.BaseEntity;
 import com.jojolaptech.camel.model.postgres.enums.UserStatusEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -33,7 +34,7 @@ import java.util.Set;
 @Table(name = "users", indexes = {
         @Index(name = "idx_username", columnList = "username")
 })
-public class UserEntity extends BaseAuditEntity {
+public class UserEntity extends BaseEntity {
 
     @Column(name = "mysql_id", unique = true)
     private Long mysqlId;

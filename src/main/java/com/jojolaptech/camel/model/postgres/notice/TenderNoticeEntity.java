@@ -1,6 +1,6 @@
 package com.jojolaptech.camel.model.postgres.notice;
 
-import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
+import com.jojolaptech.camel.model.postgres.BaseEntity;
 import com.jojolaptech.camel.model.postgres.enums.DateFormatEnum;
 import com.jojolaptech.camel.model.postgres.enums.TenderNoticeStatus;
 import jakarta.persistence.*;
@@ -19,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(name = "tender_notice")
-public class TenderNoticeEntity extends BaseAuditEntity {
+public class TenderNoticeEntity extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private DateFormatEnum dateFormat;
