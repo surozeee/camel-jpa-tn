@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Component
@@ -24,6 +25,16 @@ import java.util.UUID;
 public class NoticeProcessor implements Processor {
 
     private static final Logger log = LoggerFactory.getLogger(NoticeProcessor.class);
+    
+    // Allowed district IDs for notice import
+    private static final Set<Long> ALLOWED_DISTRICT_IDS = Set.of(
+            17L, 18L, 19L, 20L, 21L, 22L, 23L, 24L, 25L, 26L, 27L, 28L, 29L, 30L,
+            31L, 32L, 33L, 34L, 35L, 36L, 37L, 38L, 39L, 40L, 41L, 42L, 43L, 44L, 45L, 46L,
+            48L, 49L,
+            51L, 52L, 53L, 54L, 55L, 56L, 57L, 58L, 59L, 60L, 61L, 62L, 63L, 64L, 65L, 66L,
+            67L, 68L, 69L, 70L, 71L, 72L, 73L, 74L, 75L, 76L, 77L, 78L, 79L, 80L, 81L, 82L,
+            83L, 84L, 85L, 86L, 87L, 88L, 89L, 90L, 91L, 92L, 93L, 94L, 95L, 96L, 98L
+    );
 
     private final TenderNoticeRepository tenderNoticeRepository;
     private final NoticeCategoryRepository noticeCategoryRepository;
@@ -41,6 +52,18 @@ public class NoticeProcessor implements Processor {
         // Check if already exists
         if (tenderNoticeRepository.existsByMysqlId(source.getId())) {
             log.info("Skipping notice id={}, already exists", source.getId());
+            return;
+        }
+
+        // Filter by allowed district IDs
+        if (source.getTenderClassification() != null && source.getTenderClassification().getId() != null) {
+            Long districtMysqlId = source.getTenderClassification().getId();
+            if (!ALLOWED_DISTRICT_IDS.contains(districtMysqlId)) {
+                log.info("Skipping notice id={}, district id={} is not in allowed list", source.getId(), districtMysqlId);
+                return;
+            }
+        } else {
+            log.info("Skipping notice id={}, no TenderClassification (district) found", source.getId());
             return;
         }
 

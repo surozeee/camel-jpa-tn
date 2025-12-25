@@ -84,7 +84,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .maximumRedeliveries(3)
                 .redeliveryDelay(2000));
 
-        from("timer:mysql-import?repeatCount=1&delay=0")
+        /*from("timer:mysql-import?repeatCount=1&delay=0")
                 .routeId("mysql-to-postgres-import")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -113,7 +113,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(customerProcessor)
                 .end()
                 .endChoice()
-                .end();
+                .end();*/
 
         // Route for category migration
         /*from("timer:category-import?repeatCount=1&delay=2000")
@@ -341,7 +341,7 @@ public class ImportRouteBuilder extends RouteBuilder {
 
         //TODO update and fix
         // Route for notice migration to tender_notice
-        /*from("timer:notice-import?repeatCount=1&delay=6000")
+        from("timer:notice-import?repeatCount=1&delay=6000")
                 .routeId("notice-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -370,7 +370,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(noticeProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
 
         // Route for tag migration to tags
         /*from("timer:tag-import?repeatCount=1&delay=7000")
