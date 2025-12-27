@@ -87,7 +87,16 @@ public class ImportRouteBuilder extends RouteBuilder {
         // Master route that triggers all migrations sequentially
         from("timer:master-import?repeatCount=1&delay=0")
                 .routeId("master-migration-route")
-                .log("Starting sequential migration process...")
+                .process(exchange -> {
+                    long startTime = System.currentTimeMillis();
+                    exchange.setProperty("startTime", startTime);
+                    java.time.LocalDateTime startDateTime = java.time.LocalDateTime.now();
+                    exchange.setProperty("startDateTime", startDateTime);
+                    log.info("==========================================");
+                    log.info("Starting sequential migration process...");
+                    log.info("Start Time: {}", startDateTime.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")));
+                    log.info("==========================================");
+                })
                 .to("direct:mysql-to-postgres-import")
                 .log("Step 1 completed: mysql-to-postgres-import")
                 .to("direct:category-migration")
@@ -118,7 +127,26 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .log("Step 14 completed: pay-plan-migration")
                 .to("direct:user-payment-migration")
                 .log("Step 15 completed: user-payment-migration")
-                .log("All migrations completed successfully!");
+                .process(exchange -> {
+                    long endTime = System.currentTimeMillis();
+                    long startTime = exchange.getProperty("startTime", Long.class);
+                    long totalTime = endTime - startTime;
+                    java.time.LocalDateTime endDateTime = java.time.LocalDateTime.now();
+                    
+                    long hours = totalTime / (1000 * 60 * 60);
+                    long minutes = (totalTime % (1000 * 60 * 60)) / (1000 * 60);
+                    long seconds = (totalTime % (1000 * 60)) / 1000;
+                    long milliseconds = totalTime % 1000;
+                    
+                    log.info("==========================================");
+                    log.info("All migrations completed successfully!");
+                    log.info("Start Time: {}", exchange.getProperty("startDateTime", java.time.LocalDateTime.class)
+                            .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")));
+                    log.info("End Time: {}", endDateTime.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")));
+                    log.info("Total Time: {} hours, {} minutes, {} seconds, {} milliseconds", hours, minutes, seconds, milliseconds);
+                    log.info("Total Time (ms): {} ms", totalTime);
+                    log.info("==========================================");
+                });
 
         // Route for mysql-to-postgres-import (sec_user)
         from("direct:mysql-to-postgres-import")
