@@ -179,37 +179,37 @@ public class ImportRouteBuilder extends RouteBuilder {
                     log.info("==========================================");
                     log.info("IMPORT SUMMARY - Records imported per table:");
                     log.info("--------------------------------------------");
-                    log.info("1.  sec_user (mysql-to-postgres-import):        {}", exchange.getProperty("secUserCount", Integer.class, 0));
-                    log.info("2.  category:                                   {}", exchange.getProperty("categoryCount", Integer.class, 0));
-                    log.info("3.  tips_category:                              {}", exchange.getProperty("tipsCategoryCount", Integer.class, 0));
-                    log.info("4.  tips:                                       {}", exchange.getProperty("tipsCount", Integer.class, 0));
-                    log.info("5.  product_service:                           {}", exchange.getProperty("productServiceCount", Integer.class, 0));
-                    log.info("6.  tender_classification:                      {}", exchange.getProperty("tenderClassificationCount", Integer.class, 0));
-                    log.info("7.  news_paper:                                 {}", exchange.getProperty("newspaperCount", Integer.class, 0));
-                    log.info("8.  industry:                                   {}", exchange.getProperty("industryCount", Integer.class, 0));
-                    log.info("9.  notice:                                     {}", exchange.getProperty("noticeCount", Integer.class, 0));
-                    log.info("10. tag:                                        {}", exchange.getProperty("tagCount", Integer.class, 0));
-                    log.info("11. user_notes (notice_bookmark):               {}", exchange.getProperty("userNotesCount", Integer.class, 0));
-                    log.info("12. newsletter_subscription:                    {}", exchange.getProperty("newsletterSubscriptionCount", Integer.class, 0));
-                    log.info("13. unique_code:                                {}", exchange.getProperty("uniqueCodeCount", Integer.class, 0));
-                    log.info("14. pay_plan (payment_rule):                    {}", exchange.getProperty("payPlanCount", Integer.class, 0));
-                    log.info("15. user_payment:                               {}", exchange.getProperty("userPaymentCount", Integer.class, 0));
+                    log.info("1.  sec_user (mysql-to-postgres-import):        {}", exchange.getProperty("secUserCount", 0, Integer.class));
+                    log.info("2.  category:                                   {}", exchange.getProperty("categoryCount", 0, Integer.class));
+                    log.info("3.  tips_category:                              {}", exchange.getProperty("tipsCategoryCount", 0, Integer.class));
+                    log.info("4.  tips:                                       {}", exchange.getProperty("tipsCount", 0, Integer.class));
+                    log.info("5.  product_service:                           {}", exchange.getProperty("productServiceCount", 0, Integer.class));
+                    log.info("6.  tender_classification:                      {}", exchange.getProperty("tenderClassificationCount", 0, Integer.class));
+                    log.info("7.  news_paper:                                 {}", exchange.getProperty("newspaperCount", 0, Integer.class));
+                    log.info("8.  industry:                                   {}", exchange.getProperty("industryCount", 0, Integer.class));
+                    log.info("9.  notice:                                     {}", exchange.getProperty("noticeCount", 0, Integer.class));
+                    log.info("10. tag:                                        {}", exchange.getProperty("tagCount", 0, Integer.class));
+                    log.info("11. user_notes (notice_bookmark):               {}", exchange.getProperty("userNotesCount", 0, Integer.class));
+                    log.info("12. newsletter_subscription:                    {}", exchange.getProperty("newsletterSubscriptionCount", 0, Integer.class));
+                    log.info("13. unique_code:                                {}", exchange.getProperty("uniqueCodeCount", 0, Integer.class));
+                    log.info("14. pay_plan (payment_rule):                    {}", exchange.getProperty("payPlanCount", 0, Integer.class));
+                    log.info("15. user_payment:                               {}", exchange.getProperty("userPaymentCount", 0, Integer.class));
                     
-                    int grandTotal = (exchange.getProperty("secUserCount", Integer.class, 0) +
-                                     exchange.getProperty("categoryCount", Integer.class, 0) +
-                                     exchange.getProperty("tipsCategoryCount", Integer.class, 0) +
-                                     exchange.getProperty("tipsCount", Integer.class, 0) +
-                                     exchange.getProperty("productServiceCount", Integer.class, 0) +
-                                     exchange.getProperty("tenderClassificationCount", Integer.class, 0) +
-                                     exchange.getProperty("newspaperCount", Integer.class, 0) +
-                                     exchange.getProperty("industryCount", Integer.class, 0) +
-                                     exchange.getProperty("noticeCount", Integer.class, 0) +
-                                     exchange.getProperty("tagCount", Integer.class, 0) +
-                                     exchange.getProperty("userNotesCount", Integer.class, 0) +
-                                     exchange.getProperty("newsletterSubscriptionCount", Integer.class, 0) +
-                                     exchange.getProperty("uniqueCodeCount", Integer.class, 0) +
-                                     exchange.getProperty("payPlanCount", Integer.class, 0) +
-                                     exchange.getProperty("userPaymentCount", Integer.class, 0));
+                    int grandTotal = (exchange.getProperty("secUserCount", 0, Integer.class) +
+                                     exchange.getProperty("categoryCount", 0, Integer.class) +
+                                     exchange.getProperty("tipsCategoryCount", 0, Integer.class) +
+                                     exchange.getProperty("tipsCount", 0, Integer.class) +
+                                     exchange.getProperty("productServiceCount", 0, Integer.class) +
+                                     exchange.getProperty("tenderClassificationCount", 0, Integer.class) +
+                                     exchange.getProperty("newspaperCount", 0, Integer.class) +
+                                     exchange.getProperty("industryCount", 0, Integer.class) +
+                                     exchange.getProperty("noticeCount", 0, Integer.class) +
+                                     exchange.getProperty("tagCount", 0, Integer.class) +
+                                     exchange.getProperty("userNotesCount", 0, Integer.class) +
+                                     exchange.getProperty("newsletterSubscriptionCount", 0, Integer.class) +
+                                     exchange.getProperty("uniqueCodeCount", 0, Integer.class) +
+                                     exchange.getProperty("payPlanCount", 0, Integer.class) +
+                                     exchange.getProperty("userPaymentCount", 0, Integer.class));
                     
                     log.info("--------------------------------------------");
                     log.info("GRAND TOTAL:                                   {}", grandTotal);

@@ -9,7 +9,34 @@ Spring Boot + Apache Camel JPA route that pulls rows from a MySQL source table a
 - PostgreSQL with a `customers_import` table
 
 ## Configure
-Update `src/main/resources/application.yml` (or supply environment variables) for your DB hosts, users, and passwords. The important properties are:
+
+### Using Environment Variables (.env file)
+
+1. Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Edit `.env` and update with your actual database credentials:
+   ```env
+   MYSQL_URL=jdbc:mysql://localhost:3305/tender?...
+   MYSQL_USERNAME=root
+   MYSQL_PASSWORD=your_actual_password
+   POSTGRES_URL=jdbc:postgresql://localhost:5432/tender1?...
+   POSTGRES_USERNAME=postgres
+   POSTGRES_PASSWORD=your_actual_password
+   ```
+
+3. Run with the `dev` profile:
+   ```bash
+   gradle bootRun --args='--spring.profiles.active=dev'
+   ```
+
+The application will automatically load the `.env` file and use those values. The `.env` file is git-ignored for security.
+
+### Using application.yml directly
+
+Alternatively, update `src/main/resources/application.yml` (or `application-dev.yml`) for your DB hosts, users, and passwords. The important properties are:
 - `spring.datasource.mysql.*` (source)
 - `spring.datasource.postgres.*` (target)
 
@@ -35,7 +62,14 @@ create table customers_import (
 ```
 
 ## Run
+
+### Development mode (with .env file)
+```bash
+gradle bootRun --args='--spring.profiles.active=dev'
 ```
+
+### Default mode
+```bash
 gradle bootRun
 ```
 
