@@ -60,6 +60,15 @@ public class PostgresDataSourceConfig {
         properties.put(
                 "hibernate.physical_naming_strategy",
                 "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
+        // Performance optimizations for batch processing
+        properties.put("hibernate.jdbc.batch_size", "50");
+        properties.put("hibernate.jdbc.batch_versioned_data", "true");
+        properties.put("hibernate.order_inserts", "true");
+        properties.put("hibernate.order_updates", "true");
+        properties.put("hibernate.jdbc.fetch_size", "100");
+        // Memory optimizations
+        properties.put("hibernate.jdbc.use_get_generated_keys", "true");
+        properties.put("hibernate.generate_statistics", "false");
         return properties;
     }
 }
