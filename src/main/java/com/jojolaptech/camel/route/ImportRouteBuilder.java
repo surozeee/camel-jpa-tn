@@ -84,7 +84,44 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .maximumRedeliveries(3)
                 .redeliveryDelay(2000));
 
-        /*from("timer:mysql-import?repeatCount=1&delay=0")
+        // Master route that triggers all migrations sequentially
+        from("timer:master-import?repeatCount=1&delay=0")
+                .routeId("master-migration-route")
+                .log("Starting sequential migration process...")
+                .to("direct:mysql-to-postgres-import")
+                .log("Step 1 completed: mysql-to-postgres-import")
+                .to("direct:category-migration")
+                .log("Step 2 completed: category-migration")
+                .to("direct:tips-category-migration")
+                .log("Step 3 completed: tips-category-migration")
+                .to("direct:tips-migration")
+                .log("Step 4 completed: tips-migration")
+                .to("direct:product-service-migration")
+                .log("Step 5 completed: product-service-migration")
+                .to("direct:tender-classification-migration")
+                .log("Step 6 completed: tender-classification-migration")
+                .to("direct:newspaper-migration")
+                .log("Step 7 completed: newspaper-migration")
+                .to("direct:industry-migration")
+                .log("Step 8 completed: industry-migration")
+                .to("direct:notice-migration")
+                .log("Step 9 completed: notice-migration")
+                .to("direct:tag-migration")
+                .log("Step 10 completed: tag-migration")
+                .to("direct:user-notes-migration")
+                .log("Step 11 completed: user-notes-migration")
+                .to("direct:newsletter-subscription-migration")
+                .log("Step 12 completed: newsletter-subscription-migration")
+                .to("direct:unique-code-migration")
+                .log("Step 13 completed: unique-code-migration")
+                .to("direct:pay-plan-migration")
+                .log("Step 14 completed: pay-plan-migration")
+                .to("direct:user-payment-migration")
+                .log("Step 15 completed: user-payment-migration")
+                .log("All migrations completed successfully!");
+
+        // Route for mysql-to-postgres-import (sec_user)
+        from("direct:mysql-to-postgres-import")
                 .routeId("mysql-to-postgres-import")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -113,10 +150,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(customerProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
 
         // Route for category migration
-        /*from("timer:category-import?repeatCount=1&delay=2000")
+        from("direct:category-migration")
                 .routeId("category-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -148,7 +185,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .end();
 
         // Route for tips_category migration
-        from("timer:tips-category-import?repeatCount=1&delay=2200")
+        from("direct:tips-category-migration")
                 .routeId("tips-category-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -177,10 +214,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(tipsCategoryProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
 
         // Route for tips migration
-        /*from("timer:tips-import?repeatCount=1&delay=2400")
+        from("direct:tips-migration")
                 .routeId("tips-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -209,10 +246,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(tipsProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
 
         // Route for product_service migration to product_service
-        /*from("timer:product-service-import?repeatCount=1&delay=2500")
+        from("direct:product-service-migration")
                 .routeId("product-service-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -241,10 +278,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(productServiceProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
 
         // Route for tender_classification migration to district
-        /*from("timer:tender-classification-import?repeatCount=1&delay=2800")
+        from("direct:tender-classification-migration")
                 .routeId("tender-classification-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -273,10 +310,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(tenderClassificationProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
 
         // Route for newspaper migration
-        /*from("timer:newspaper-import?repeatCount=1&delay=3000")
+        from("direct:newspaper-migration")
                 .routeId("newspaper-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -305,10 +342,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(newsPaperProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
 
         // Route for industry migration
-        /*from("timer:industry-import?repeatCount=1&delay=4000")
+        from("direct:industry-migration")
                 .routeId("industry-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -337,11 +374,11 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(industryProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
 
         //TODO update and fix
         // Route for notice migration to tender_notice
-        from("timer:notice-import?repeatCount=1&delay=6000")
+        from("direct:notice-migration")
                 .routeId("notice-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -373,7 +410,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .end();
 
         // Route for tag migration to tags
-        /*from("timer:tag-import?repeatCount=1&delay=7000")
+        from("direct:tag-migration")
                 .routeId("tag-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -402,10 +439,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(tagProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
 
         // Route for user_notes migration to notice_bookmark
-        /*from("timer:user-notes-import?repeatCount=1&delay=8000")
+        from("direct:user-notes-migration")
                 .routeId("user-notes-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -434,10 +471,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(noticeBookmarkProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
 
         // Route for newsletter subscription migration
-        /*from("timer:newsletter-subscription-import?repeatCount=1&delay=15000")
+        from("direct:newsletter-subscription-migration")
                 .routeId("newsletter-subscription-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -466,10 +503,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(newsletterSubscriptionProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
 
         // Route for unique code migration
-        /*from("timer:unique-code-import?repeatCount=1&delay=5000")
+        from("direct:unique-code-migration")
                 .routeId("unique-code-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -498,10 +535,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(uniqueCodeProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
 
         // Route for pay_plan migration to payment_rule
-        /*from("timer:pay-plan-import?repeatCount=1&delay=8000")
+        from("direct:pay-plan-migration")
                 .routeId("pay-plan-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -530,10 +567,10 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(payPlanProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
 
         // Route for user_payment migration
-        /*from("timer:user-payment-import?repeatCount=1&delay=10000")
+        from("direct:user-payment-migration")
                 .routeId("user-payment-migration")
                 .setProperty("page").constant(0)
                 .setProperty("hasNext").constant(true)
@@ -562,7 +599,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(userPaymentProcessor)
                 .end()
                 .endChoice()
-                .end();*/
+                .end();
     }
 }
 
