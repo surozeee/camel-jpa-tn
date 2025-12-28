@@ -159,11 +159,20 @@ public class NoticeProcessor implements Processor {
             target.setPublishDate(publishDate);
         }
         
-        if (source.getLastDate() != null) {
-            LocalDateTime submitDate = source.getLastDate()
+        // Map addTime to createdAt
+        if (source.getAddTime() != null) {
+            LocalDateTime createdAt = source.getAddTime()
                     .atZone(ZoneId.systemDefault())
                     .toLocalDateTime();
-            target.setSubmitDate(submitDate);
+            target.setCreatedAt(createdAt);
+        }
+        
+        // Map lastDate to expiryDate
+        if (source.getLastDate() != null) {
+            LocalDateTime expiryDate = source.getLastDate()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime();
+            target.setExpiryDate(expiryDate);
         }
         
         target.setRemarks(source.getRemark());
