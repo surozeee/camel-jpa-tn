@@ -42,13 +42,13 @@ public class TagProcessor implements Processor {
 
         // Look up user by mysqlId
         UUID userId = null;
-        if (source.getSecUser() != null && source.getSecUser().getId() != null) {
-            Optional<UserEntity> userOpt = userRepository.findByMysqlId(source.getSecUser().getId());
+        if (source.getSecUser() != null) {
+            Optional<UserEntity> userOpt = userRepository.findByMysqlId(source.getSecUser());
             if (userOpt.isPresent()) {
                 userId = userOpt.get().getId();
-                log.debug("Found user with mysqlId={}, postgresId={}", source.getSecUser().getId(), userId);
+                log.debug("Found user with mysqlId={}, postgresId={}", source.getSecUser(), userId);
             } else {
-                log.warn("User not found in Postgres for mysqlId={}", source.getSecUser().getId());
+                log.warn("User not found in Postgres for mysqlId={}", source.getSecUser());
             }
         }
 

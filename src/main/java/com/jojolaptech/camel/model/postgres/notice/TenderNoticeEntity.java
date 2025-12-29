@@ -23,18 +23,16 @@ public class TenderNoticeEntity extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private DateFormatEnum dateFormat;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private UUID sourceId;
     private UUID districtId;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private UUID categoryId;
     @Column(name = "mysql_id", unique = true)
     private Long mysqlId;
-    @Column(nullable = false)
     private UUID industryId;
 
-    @Column(nullable = false)
     private UUID productServiceId;
 
     @Column(columnDefinition = "TEXT")
