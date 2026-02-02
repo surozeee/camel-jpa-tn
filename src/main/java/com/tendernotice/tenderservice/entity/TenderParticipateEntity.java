@@ -1,7 +1,8 @@
-package com.jojolaptech.camel.model.postgres.notice;
+package com.tendernotice.tenderservice.entity;
 
 import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
-import com.jojolaptech.camel.model.postgres.enums.NoticeAwardCategory;
+import com.jojolaptech.camel.model.postgres.notice.TenderNoticeEntity;
+import com.tendernotice.tenderservice.enums.YesNoEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,9 +23,10 @@ import java.util.UUID;
 public class TenderParticipateEntity extends BaseAuditEntity {
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "jsonb")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private List<NoticeAwardCategory> noticeAwardCategory;
+    private YesNoEnum awarded;
+
+    @Enumerated(EnumType.STRING)
+    private YesNoEnum participated;
 
     private UUID userId;
     @Column(columnDefinition = "TEXT")
@@ -40,4 +42,3 @@ public class TenderParticipateEntity extends BaseAuditEntity {
 
 
 }
-
