@@ -13,6 +13,7 @@ import com.jojolaptech.camel.processor.TenderClassificationProcessor;
 import com.jojolaptech.camel.processor.TipsCategoryProcessor;
 import com.jojolaptech.camel.processor.TipsProcessor;
 import com.jojolaptech.camel.processor.UniqueCodeProcessor;
+import com.jojolaptech.camel.processor.UserCallLogProcessor;
 import com.jojolaptech.camel.processor.PayPlanProcessor;
 import com.jojolaptech.camel.processor.UserPaymentProcessor;
 import com.jojolaptech.camel.repository.mysql.IndustryRepository;
@@ -29,6 +30,7 @@ import com.jojolaptech.camel.repository.mysql.UniqueCodeTableRepository;
 import com.jojolaptech.camel.repository.mysql.PayPlanRepository;
 import com.jojolaptech.camel.repository.mysql.UserPaymentRepository;
 import com.jojolaptech.camel.repository.mysql.sec.SecUserRepository;
+import com.jojolaptech.camel.repository.mysql.tendersystem.CallLogRepository;
 import com.jojolaptech.camel.repository.mysql.tendersystem.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.camel.builder.RouteBuilder;
@@ -61,6 +63,7 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final NewsletterSubscriptionProcessor newsletterSubscriptionProcessor;
     private final UniqueCodeProcessor uniqueCodeProcessor;
     private final UserPaymentProcessor userPaymentProcessor;
+    private final UserCallLogProcessor userCallLogProcessor;
     private final PayPlanProcessor payPlanProcessor;
     private final SecUserRepository secUserRepository;
     private final CategoryRepository categoryRepository;
@@ -76,6 +79,7 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final NewsletterSubscriptionRepository newsletterSubscriptionRepository;
     private final UniqueCodeTableRepository uniqueCodeTableRepository;
     private final UserPaymentRepository userPaymentRepository;
+    private final CallLogRepository callLogRepository;
     private final PayPlanRepository payPlanRepository;
 
     // Optimized page size: balance between memory usage and database round trips
@@ -155,6 +159,9 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(exchange -> { System.gc(); Thread.sleep(MIGRATION_THROTTLE_MS); })
                 .to("direct:user-payment-migration")
                 .log("Step 15 completed: user-payment-migration")
+                .process(exchange -> { System.gc(); Thread.sleep(MIGRATION_THROTTLE_MS); })
+                .to("direct:call-log-migration")
+                .log("Step 16 completed: call-log-migration")
                 .process(exchange -> {
                     long endTime = System.currentTimeMillis();
                     long startTime = exchange.getProperty("startTime", Long.class);
@@ -194,6 +201,7 @@ public class ImportRouteBuilder extends RouteBuilder {
                     log.info("13. unique_code:                                {}", exchange.getProperty("uniqueCodeCount", 0, Integer.class));
                     log.info("14. pay_plan (payment_rule):                    {}", exchange.getProperty("payPlanCount", 0, Integer.class));
                     log.info("15. user_payment:                               {}", exchange.getProperty("userPaymentCount", 0, Integer.class));
+                    log.info("16. call_log (user_call_logs):                    {}", exchange.getProperty("callLogCount", 0, Integer.class));
                     
                     int grandTotal = (exchange.getProperty("secUserCount", 0, Integer.class) +
                                      exchange.getProperty("categoryCount", 0, Integer.class) +
@@ -209,7 +217,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                                      exchange.getProperty("newsletterSubscriptionCount", 0, Integer.class) +
                                      exchange.getProperty("uniqueCodeCount", 0, Integer.class) +
                                      exchange.getProperty("payPlanCount", 0, Integer.class) +
-                                     exchange.getProperty("userPaymentCount", 0, Integer.class));
+                                     exchange.getProperty("userPaymentCount", 0, Integer.class) +
+                                     exchange.getProperty("callLogCount", 0, Integer.class));
                     
                     log.info("--------------------------------------------");
                     log.info("GRAND TOTAL:                                   {}", grandTotal);
@@ -890,6 +899,51 @@ public class ImportRouteBuilder extends RouteBuilder {
                     log.info("Total records imported: {}", totalCount);
                     log.info("==========================================");
                     exchange.setProperty("userPaymentCount", totalCount);
+                });
+
+        // Route for call_log migration to user_call_logs
+        from("direct:call-log-migration")
+                .routeId("call-log-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                .process(exchange -> {
+                    int page = exchange.getProperty("page", Integer.class);
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
+
+                    var resultPage = callLogRepository.findAllWithSecUser(pageable);
+
+                    exchange.getMessage().setBody(resultPage.getContent());
+                    exchange.setProperty("hasNext", resultPage.hasNext());
+                    exchange.setProperty("page", page + 1);
+
+                    log.info("Fetched call_log page={}, size={}, returnedRows={}, hasNext={}",
+                            page, PAGE_SIZE, resultPage.getNumberOfElements(), resultPage.hasNext());
+                })
+                .choice()
+                .when(simple("${body.size} == 0"))
+                .log("No call_log rows in this page, continuing...")
+                .otherwise()
+                .split(body()).streaming().stopOnException()
+                .log("Consuming call_log mysqlId=${body.id}")
+                .process(exchange -> {
+                    Integer count = exchange.getProperty("importCount", Integer.class);
+                    exchange.setProperty("importCount", count + 1);
+                })
+                .process(userCallLogProcessor)
+                .end()
+                .endChoice()
+                .end()
+                .process(exchange -> {
+                    Integer totalCount = exchange.getProperty("importCount", Integer.class);
+                    log.info("==========================================");
+                    log.info("call-log-migration completed!");
+                    log.info("Total records imported: {}", totalCount);
+                    log.info("==========================================");
+                    exchange.setProperty("callLogCount", totalCount);
                 });
     }
 }

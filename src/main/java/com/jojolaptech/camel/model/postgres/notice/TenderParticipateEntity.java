@@ -1,8 +1,7 @@
-package com.tendernotice.tenderservice.entity;
+package com.jojolaptech.camel.model.postgres.notice;
 
 import com.jojolaptech.camel.model.postgres.BaseAuditEntity;
-import com.jojolaptech.camel.model.postgres.notice.TenderNoticeEntity;
-import com.tendernotice.tenderservice.enums.YesNoEnum;
+import com.jojolaptech.camel.model.postgres.enums.YesNoEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
