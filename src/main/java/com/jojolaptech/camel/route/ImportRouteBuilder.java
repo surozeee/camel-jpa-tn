@@ -14,6 +14,7 @@ import com.jojolaptech.camel.processor.TipsCategoryProcessor;
 import com.jojolaptech.camel.processor.TipsProcessor;
 import com.jojolaptech.camel.processor.UniqueCodeProcessor;
 import com.jojolaptech.camel.processor.UserCallLogProcessor;
+import com.jojolaptech.camel.processor.AdvertisementBannerProcessor;
 import com.jojolaptech.camel.processor.PayPlanProcessor;
 import com.jojolaptech.camel.processor.UserPaymentProcessor;
 import com.jojolaptech.camel.repository.mysql.IndustryRepository;
@@ -30,6 +31,7 @@ import com.jojolaptech.camel.repository.mysql.UniqueCodeTableRepository;
 import com.jojolaptech.camel.repository.mysql.PayPlanRepository;
 import com.jojolaptech.camel.repository.mysql.UserPaymentRepository;
 import com.jojolaptech.camel.repository.mysql.sec.SecUserRepository;
+import com.jojolaptech.camel.repository.mysql.tendersystem.AdvertisementBannerRepository;
 import com.jojolaptech.camel.repository.mysql.tendersystem.CallLogRepository;
 import com.jojolaptech.camel.repository.mysql.tendersystem.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +66,7 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final UniqueCodeProcessor uniqueCodeProcessor;
     private final UserPaymentProcessor userPaymentProcessor;
     private final UserCallLogProcessor userCallLogProcessor;
+    private final AdvertisementBannerProcessor advertisementBannerProcessor;
     private final PayPlanProcessor payPlanProcessor;
     private final SecUserRepository secUserRepository;
     private final CategoryRepository categoryRepository;
@@ -80,6 +83,7 @@ public class ImportRouteBuilder extends RouteBuilder {
     private final UniqueCodeTableRepository uniqueCodeTableRepository;
     private final UserPaymentRepository userPaymentRepository;
     private final CallLogRepository callLogRepository;
+    private final AdvertisementBannerRepository advertisementBannerRepository;
     private final PayPlanRepository payPlanRepository;
 
     // Optimized page size: balance between memory usage and database round trips
@@ -111,27 +115,27 @@ public class ImportRouteBuilder extends RouteBuilder {
                     log.info("Page Size: {} (optimized for performance)", PAGE_SIZE);
                     log.info("==========================================");
                 })
-                .to("direct:mysql-to-postgres-import")
-                .log("Step 1 completed: mysql-to-postgres-import")
-                .process(exchange -> {
-                    // Allow GC between migrations
-                    System.gc();
-                    Thread.sleep(MIGRATION_THROTTLE_MS);
-                })
-                .to("direct:category-migration")
-                .log("Step 2 completed: category-migration")
-                .process(exchange -> { System.gc(); Thread.sleep(MIGRATION_THROTTLE_MS); })
-                .to("direct:tips-category-migration")
-                .log("Step 3 completed: tips-category-migration")
-                .process(exchange -> { System.gc(); Thread.sleep(MIGRATION_THROTTLE_MS); })
-                .to("direct:tips-migration")
-                .log("Step 4 completed: tips-migration")
-                .process(exchange -> { System.gc(); Thread.sleep(MIGRATION_THROTTLE_MS); })
-                .to("direct:product-service-migration")
-                .log("Step 5 completed: product-service-migration")
-                .process(exchange -> { System.gc(); Thread.sleep(MIGRATION_THROTTLE_MS); })
-                .to("direct:tender-classification-migration")
-                .log("Step 6 completed: tender-classification-migration")
+                // Skipped: sec_user (mysql-to-postgres-import) and category — start migration at step 3
+                // .to("direct:mysql-to-postgres-import")
+                // .log("Step 1 completed: mysql-to-postgres-import")
+                // .process(exchange -> {
+                //     System.gc();
+                //     Thread.sleep(MIGRATION_THROTTLE_MS);
+                // })
+                // .to("direct:category-migration")
+                // .log("Step 2 completed: category-migration")
+                // .process(exchange -> { System.gc(); Thread.sleep(MIGRATION_THROTTLE_MS); })
+                // .to("direct:tips-category-migration")
+                // .log("Step 3 completed: tips-category-migration")
+                // .process(exchange -> { System.gc(); Thread.sleep(MIGRATION_THROTTLE_MS); })
+                // .to("direct:tips-migration")
+                // .log("Step 4 completed: tips-migration")
+//                .process(exchange -> { System.gc(); Thread.sleep(MIGRATION_THROTTLE_MS); })
+//                .to("direct:product-service-migration")
+//                .log("Step 5 completed: product-service-migration")
+//                .process(exchange -> { System.gc(); Thread.sleep(MIGRATION_THROTTLE_MS); })
+//                .to("direct:tender-classification-migration")
+//                .log("Step 6 completed: tender-classification-migration")
                 .process(exchange -> { System.gc(); Thread.sleep(MIGRATION_THROTTLE_MS); })
                 .to("direct:newspaper-migration")
                 .log("Step 7 completed: newspaper-migration")
@@ -162,6 +166,9 @@ public class ImportRouteBuilder extends RouteBuilder {
                 .process(exchange -> { System.gc(); Thread.sleep(MIGRATION_THROTTLE_MS); })
                 .to("direct:call-log-migration")
                 .log("Step 16 completed: call-log-migration")
+                .process(exchange -> { System.gc(); Thread.sleep(MIGRATION_THROTTLE_MS); })
+                .to("direct:advertisement-banner-migration")
+                .log("Step 17 completed: advertisement-banner-migration")
                 .process(exchange -> {
                     long endTime = System.currentTimeMillis();
                     long startTime = exchange.getProperty("startTime", Long.class);
@@ -186,8 +193,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                     log.info("==========================================");
                     log.info("IMPORT SUMMARY - Records imported per table:");
                     log.info("--------------------------------------------");
-                    log.info("1.  sec_user (mysql-to-postgres-import):        {}", exchange.getProperty("secUserCount", 0, Integer.class));
-                    log.info("2.  category:                                   {}", exchange.getProperty("categoryCount", 0, Integer.class));
+                    // log.info("1.  sec_user (mysql-to-postgres-import):        {}", exchange.getProperty("secUserCount", 0, Integer.class));
+                    // log.info("2.  category:                                   {}", exchange.getProperty("categoryCount", 0, Integer.class));
                     log.info("3.  tips_category:                              {}", exchange.getProperty("tipsCategoryCount", 0, Integer.class));
                     log.info("4.  tips:                                       {}", exchange.getProperty("tipsCount", 0, Integer.class));
                     log.info("5.  product_service:                           {}", exchange.getProperty("productServiceCount", 0, Integer.class));
@@ -202,10 +209,9 @@ public class ImportRouteBuilder extends RouteBuilder {
                     log.info("14. pay_plan (payment_rule):                    {}", exchange.getProperty("payPlanCount", 0, Integer.class));
                     log.info("15. user_payment:                               {}", exchange.getProperty("userPaymentCount", 0, Integer.class));
                     log.info("16. call_log (user_call_logs):                    {}", exchange.getProperty("callLogCount", 0, Integer.class));
+                    log.info("17. advertisement_banner:                       {}", exchange.getProperty("advertisementBannerCount", 0, Integer.class));
                     
-                    int grandTotal = (exchange.getProperty("secUserCount", 0, Integer.class) +
-                                     exchange.getProperty("categoryCount", 0, Integer.class) +
-                                     exchange.getProperty("tipsCategoryCount", 0, Integer.class) +
+                    int grandTotal = (exchange.getProperty("tipsCategoryCount", 0, Integer.class) +
                                      exchange.getProperty("tipsCount", 0, Integer.class) +
                                      exchange.getProperty("productServiceCount", 0, Integer.class) +
                                      exchange.getProperty("tenderClassificationCount", 0, Integer.class) +
@@ -218,7 +224,8 @@ public class ImportRouteBuilder extends RouteBuilder {
                                      exchange.getProperty("uniqueCodeCount", 0, Integer.class) +
                                      exchange.getProperty("payPlanCount", 0, Integer.class) +
                                      exchange.getProperty("userPaymentCount", 0, Integer.class) +
-                                     exchange.getProperty("callLogCount", 0, Integer.class));
+                                     exchange.getProperty("callLogCount", 0, Integer.class) +
+                                     exchange.getProperty("advertisementBannerCount", 0, Integer.class));
                     
                     log.info("--------------------------------------------");
                     log.info("GRAND TOTAL:                                   {}", grandTotal);
@@ -944,6 +951,51 @@ public class ImportRouteBuilder extends RouteBuilder {
                     log.info("Total records imported: {}", totalCount);
                     log.info("==========================================");
                     exchange.setProperty("callLogCount", totalCount);
+                });
+
+        // Route for advertisement_banner (MySQL) -> advertisement_banner (Postgres, single-slot columns)
+        from("direct:advertisement-banner-migration")
+                .routeId("advertisement-banner-migration")
+                .setProperty("page").constant(0)
+                .setProperty("hasNext").constant(true)
+                .setProperty("importCount").constant(0)
+
+                .loopDoWhile(exchange -> Boolean.TRUE.equals(exchange.getProperty("hasNext", Boolean.class)))
+                .process(exchange -> {
+                    int page = exchange.getProperty("page", Integer.class);
+                    var pageable = PageRequest.of(page, PAGE_SIZE,
+                            Sort.by("id").ascending());
+
+                    var resultPage = advertisementBannerRepository.findAll(pageable);
+
+                    exchange.getMessage().setBody(resultPage.getContent());
+                    exchange.setProperty("hasNext", resultPage.hasNext());
+                    exchange.setProperty("page", page + 1);
+
+                    log.info("Fetched advertisement_banner page={}, size={}, returnedRows={}, hasNext={}",
+                            page, PAGE_SIZE, resultPage.getNumberOfElements(), resultPage.hasNext());
+                })
+                .choice()
+                .when(simple("${body.size} == 0"))
+                .log("No advertisement_banner rows in this page, continuing...")
+                .otherwise()
+                .split(body()).streaming().stopOnException()
+                .log("Consuming advertisement_banner mysqlId=${body.id}")
+                .process(exchange -> {
+                    Integer count = exchange.getProperty("importCount", Integer.class);
+                    exchange.setProperty("importCount", count + 1);
+                })
+                .process(advertisementBannerProcessor)
+                .end()
+                .endChoice()
+                .end()
+                .process(exchange -> {
+                    Integer totalCount = exchange.getProperty("importCount", Integer.class);
+                    log.info("==========================================");
+                    log.info("advertisement-banner-migration completed!");
+                    log.info("Total records imported: {}", totalCount);
+                    log.info("==========================================");
+                    exchange.setProperty("advertisementBannerCount", totalCount);
                 });
     }
 }

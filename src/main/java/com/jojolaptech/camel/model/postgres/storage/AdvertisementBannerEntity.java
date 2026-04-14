@@ -8,6 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * Single-slot banner model aligned with Postgres {@code advertisement_url} / {@code banner} (merged from legacy top/middle).
+ */
 @Getter
 @Setter
 @AllArgsConstructor
@@ -16,16 +19,17 @@ import lombok.Setter;
 @Table(name = "advertisement_banner")
 public class AdvertisementBannerEntity extends BaseAuditEntity {
 
+    @Column(name = "mysql_id", unique = true)
+    private Long mysqlId;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(columnDefinition = "TEXT")
-    private String advertisementMiddleUrl;
+    private String advertisementUrl;
 
-    private String bannerMiddle;
     @Column(columnDefinition = "TEXT")
-    private String advertisementTopUrl;
-    private String bannerTop;
+    private String banner;
 
     @Enumerated(EnumType.STRING)
     private StatusEnum status;
@@ -35,4 +39,3 @@ public class AdvertisementBannerEntity extends BaseAuditEntity {
         status = StatusEnum.ACTIVE;
     }
 }
-

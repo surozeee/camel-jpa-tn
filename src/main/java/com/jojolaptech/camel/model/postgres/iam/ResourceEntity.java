@@ -54,9 +54,11 @@ public class ResourceEntity extends BaseAuditEntity {
     @JoinColumn(name = "parent_resource_id")
     private ResourceEntity parentResource;
 
+    @Builder.Default
     @OneToMany(mappedBy = "parentResource", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<ResourceEntity> childrenResources = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "resource", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<PermissionEntity> permissions = new ArrayList<>();
 

@@ -48,6 +48,7 @@ public class UserEntity extends BaseEntity {
     @Column(name = "status", nullable = false, length = 10)
     private UserStatusEnum status;
 
+    @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",

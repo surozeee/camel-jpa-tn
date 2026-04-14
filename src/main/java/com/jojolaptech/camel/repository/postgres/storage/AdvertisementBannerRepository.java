@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository("pgAdvertisementBannerRepository")
 public interface AdvertisementBannerRepository
-        extends JpaRepository<AdvertisementBannerEntity, UUID> {}
+        extends JpaRepository<AdvertisementBannerEntity, UUID> {
+    boolean existsByMysqlId(Long mysqlId);
+}
 
 
