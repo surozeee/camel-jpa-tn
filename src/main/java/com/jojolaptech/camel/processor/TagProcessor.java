@@ -1,10 +1,8 @@
 package com.jojolaptech.camel.processor;
 
 import com.jojolaptech.camel.model.mysql.tendersystem.Tag;
-import com.jojolaptech.camel.model.postgres.iam.UserEntity;
 import com.jojolaptech.camel.model.postgres.notice.TagsEntity;
 import com.jojolaptech.camel.model.postgres.notice.TenderNoticeEntity;
-import com.jojolaptech.camel.repository.postgres.iam.UserRepository;
 import com.jojolaptech.camel.repository.postgres.notice.TagsRepository;
 import com.jojolaptech.camel.repository.postgres.notice.TenderNoticeRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +23,6 @@ public class TagProcessor implements Processor {
     private static final Logger log = LoggerFactory.getLogger(TagProcessor.class);
 
     private final TagsRepository tagsRepository;
-    private final UserRepository userRepository;
     private final TenderNoticeRepository tenderNoticeRepository;
 
     @Override
@@ -40,18 +37,8 @@ public class TagProcessor implements Processor {
             return;
         }
 
-        // Look up user by mysqlId (SecUser.id in MySQL maps to users.mysql_id in Postgres)
+        // Source tag table has no user reference in this environment.
         UUID userId = null;
-        if (source.getSecUser() != null && source.getSecUser().getId() != null) {
-            Long secUserMysqlId = source.getSecUser().getId();
-            Optional<UserEntity> userOpt = userRepository.findByMysqlId(secUserMysqlId);
-            if (userOpt.isPresent()) {
-                userId = userOpt.get().getId();
-                log.debug("Found user with mysqlId={}, postgresId={}", secUserMysqlId, userId);
-            } else {
-                log.warn("User not found in Postgres for mysqlId={}", secUserMysqlId);
-            }
-        }
 
         // Look up notice by mysqlId
         UUID noticeId = null;

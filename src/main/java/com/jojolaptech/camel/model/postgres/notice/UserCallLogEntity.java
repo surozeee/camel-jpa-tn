@@ -25,7 +25,7 @@ public class UserCallLogEntity extends BaseAuditEntity {
     @Column(name = "remarks", length = 1000)
     private String remarks;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 }
